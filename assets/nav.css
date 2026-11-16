@@ -1,0 +1,47 @@
+/* Navbar flotante (referencia Primefold): barra con borde sobre fondo claro, transparente sobre el hero oscuro */
+header.fixed{padding:12px 16px 0;pointer-events:none;background:none!important;border:0!important;backdrop-filter:none!important}
+header.fixed>div:first-child{pointer-events:auto;max-width:var(--container-max);padding:10px 24px!important;border:1px solid transparent;border-radius:var(--radius-xl);transition:background-color .3s,border-color .3s,backdrop-filter .3s}
+header.fixed>*:not(:first-child){pointer-events:auto}
+header.fixed[data-bar="light"]>div:first-child{background:color-mix(in srgb,var(--card) 90%,transparent);border-color:var(--line-soft);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+header.fixed[data-bar="dark"]>div:first-child{background:color-mix(in srgb,var(--brand-ink) 55%,transparent);border-color:color-mix(in srgb,var(--card) 14%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+/* Enlaces: texto plano, sin píldora; fondo sutil al pasar el mouse */
+header.fixed nav>a.rounded-\[10px\],header.fixed nav button.rounded-\[10px\]{background:transparent!important;font-size:var(--body-m-size);font-weight:500;padding:8px 14px}
+header.fixed nav{gap:4px}
+header.fixed nav>a[href*="contacto"]{margin-left:12px}
+header.fixed nav>p{margin-left:12px;padding:0 10px}
+header.fixed button[aria-label="Menu"]{background:transparent!important}
+@media (max-width:639px){header.fixed{padding:8px 10px 0}header.fixed>div:first-child{padding:8px 10px 8px 14px!important}}
+
+/* Megamenú y menú móvil: claros cuando el navbar está en modo claro */
+header.fixed[data-bar="light"] :is([class~="bg-ink-2/95"],[class~="bg-ink/95"]){background:var(--card);border-color:var(--line-soft);box-shadow:0 20px 40px -16px color-mix(in srgb,var(--brand-ink) 18%,transparent)}
+header.fixed[data-bar="light"] :is([class~="bg-ink-2/95"],[class~="bg-ink/95"]) :is(.text-white,[class~="text-white/80"]){color:var(--brand-ink)}
+header.fixed[data-bar="light"] :is([class~="bg-ink-2/95"],[class~="bg-ink/95"]) :is([class~="text-white/55"],[class~="text-white/40"],[class~="text-white/30"]){color:var(--muted-foreground)}
+header.fixed[data-bar="light"] :is([class~="bg-ink-2/95"],[class~="bg-ink/95"]) [class~="bg-white/15"]{background:var(--line-soft)}
+header.fixed[data-bar="light"] :is([class~="bg-ink-2/95"],[class~="bg-ink/95"]) :is([class~="border-white/5"],[class~="border-white/10"]){border-color:var(--line-soft)}
+header.fixed[data-bar="light"] :is([class~="bg-ink-2/95"],[class~="bg-ink/95"]) a:hover{background-color:color-mix(in srgb,var(--brand-ink) 5%,transparent)}
+header.fixed[data-bar="light"] :is([class~="bg-ink-2/95"],[class~="bg-ink/95"]) a:is(.hover\:text-accent-base):hover{background:none;color:var(--brand-accent)}
+
+/* CTA de cierre compacto: banda horizontal, sin video de fondo */
+.sec-cta{padding-top:40px!important;padding-bottom:56px!important}
+.sec-cta>div{display:grid!important;grid-template-columns:1fr;justify-items:start;gap:10px;padding:28px 24px!important;border-radius:24px!important;text-align:left!important;background:linear-gradient(115deg,var(--brand-ink) 0%,#16134a 60%,#2a2490 100%)!important}
+.sec-cta>div::after{content:"";position:absolute;right:-8%;top:-60%;width:46%;aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,rgba(240,185,74,.18),transparent);pointer-events:none}
+.sec-cta>div>video,.sec-cta>div>div[aria-hidden]{display:none!important}
+.sec-cta h2{max-width:none!important;font-size:clamp(22px,2.4vw,30px)!important;line-height:1.2!important;font-weight:600!important}
+.sec-cta p{margin:0!important;max-width:640px!important;font-size:16px!important;line-height:1.5!important;color:rgba(255,255,255,.72)!important;text-align:left!important}
+.sec-cta .mt-7{margin-top:8px!important}
+@media (min-width:900px){
+  .sec-cta>div{grid-template-columns:1fr auto;column-gap:40px;align-items:center;padding:36px 44px!important}
+  .sec-cta>div>h2,.sec-cta>div>p{grid-column:1}
+  .sec-cta>div>.mt-7{grid-column:2;grid-row:1 / span 2;margin-top:0!important;align-self:center}
+}
+
+/* Estados (propuesta para el sistema de diseño) */
+:root{--status-ok:#2cb67d;--status-ok-ink:#15803d;--status-ok-soft:#86efac;--status-bad:var(--destructive);--status-bad-ink:#b91c1c;--status-bad-soft:#fca5a5;--status-warn:#e8a23a;--status-warn-ink:#a16207;--status-warn-soft:#f6dfa3}
+
+/* Sección actual en el menú: punto de acento bajo el texto */
+header.fixed nav>a[aria-current="page"],header.fixed nav button[data-current]{position:relative;font-weight:600!important}
+header.fixed nav>a[aria-current="page"]::after,header.fixed nav button[data-current]::after{content:"";position:absolute;left:50%;bottom:-1px;width:5px;height:5px;border-radius:50%;background:var(--brand-accent);transform:translateX(-50%)}
+header.fixed:not([data-bar="light"]) nav>a[aria-current="page"]::after,header.fixed:not([data-bar="light"]) nav button[data-current]::after{background:var(--indigo-300)}
+header.fixed nav button[data-current]::after{left:calc(50% - 12px)}
+/* menú móvil */
+header.fixed :is([class~="bg-ink/95"]) a[aria-current="page"]{font-weight:600;box-shadow:inset 3px 0 0 var(--brand-accent);background:color-mix(in srgb,var(--brand-accent) 10%,transparent)}

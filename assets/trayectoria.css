@@ -1,0 +1,56 @@
+/* Compañía · Trayectoria */
+.tr{margin:48px 0 0;padding:0;list-style:none}
+.tr-sep{margin:0 0 18px;padding-left:152px;font:600 12px/1 var(--font-family-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--cool-500)}
+.tr-sep.boss{margin-top:18px;color:var(--brand-accent)}
+.tr-i{display:grid;grid-template-columns:120px 1fr;column-gap:32px}
+.tr-y{font:600 28px/1.1 var(--font-family-display);color:var(--cool-500)}
+.tr-i.boss .tr-y{color:var(--brand-accent)}
+.tr-b{position:relative;padding:0 0 36px 24px;border-left:1px solid color-mix(in srgb,var(--brand-ink) 12%,transparent)}
+.tr-i.boss .tr-b{border-left-color:color-mix(in srgb,var(--brand-accent) 45%,transparent)}
+.tr-i:last-child .tr-b{border-left-color:transparent}
+.tr-dot{position:absolute;left:-6px;top:8px;width:11px;height:11px;border-radius:50%;background:var(--brand-paper-2);border:2px solid var(--cool-300)}
+.tr-i.boss .tr-dot{background:var(--brand-accent);border-color:var(--brand-accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--brand-accent) 15%,transparent)}
+.tr-i:last-child .tr-dot{background:var(--brand-accent);border-color:var(--brand-accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--brand-accent) 22%,transparent)}
+.tr-org{display:inline-block;margin-bottom:8px;padding:4px 10px;border-radius:999px;background:var(--brand-paper);border:1px solid var(--bz-line,rgba(5,5,16,.1));font:600 12px/1 var(--font-family-sans);color:var(--cool-700)}
+.tr-i.boss .tr-org{background:var(--indigo-50);border-color:var(--indigo-100);color:var(--brand-accent)}
+.tr-b h3{font:600 20px/1.25 var(--font-family-display);color:var(--brand-ink)}
+.tr-b p{margin-top:6px;max-width:680px;font-size:16px;line-height:1.55;color:var(--muted-foreground)}
+@media (max-width:639px){.tr-i{grid-template-columns:64px 1fr;column-gap:16px}.tr-y{font-size:20px}.tr-sep{padding-left:80px}.tr-b p{font-size:15px}}
+.tr{max-width:900px;margin-left:auto;margin-right:auto}
+/* Compañía · Visión y presencia */
+.vz{display:grid;gap:28px;align-items:center;padding:32px;border-radius:32px;background:linear-gradient(120deg,var(--brand-ink),color-mix(in srgb,var(--brand-accent) 32%,var(--brand-ink)) 70%,color-mix(in srgb,var(--brand-accent) 52%,var(--brand-ink)));color:var(--brand-paper-2);position:relative;overflow:hidden}
+.vz::after{content:"";position:absolute;right:-10%;top:-40%;width:50%;aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--blue-500) 20%,transparent),transparent);pointer-events:none}
+.vz>*{position:relative}
+@media (min-width:1024px){.vz{grid-template-columns:1.2fr 1fr;gap:48px;padding:48px}}
+.vz-eb{font:600 13px/1 var(--font-family-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--indigo-300)}
+.vz-h{margin-top:14px;font:600 clamp(26px,3.4vw,38px)/1.15 var(--font-family-display);letter-spacing:-.02em;text-wrap:balance}
+.vz-p{margin-top:14px;max-width:560px;font-size:17px;line-height:1.55;color:rgba(255,255,255,.72)}
+.vz-geo>p{font:600 12px/1 var(--font-family-sans);letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.vz-geo ul{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.vz-geo li{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+.vz-code{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--indigo-300),var(--brand-accent));color:var(--brand-paper-2);font:800 15px/1 var(--font-family-display);letter-spacing:.04em}
+.vz-geo b{display:block;font:600 18px/1.2 var(--font-family-display)}
+.vz-geo small{display:block;margin-top:3px;font-size:13px;color:rgba(255,255,255,.6)}
+.tr-b p b{color:var(--brand-ink);font-weight:600}
+.tr-note{display:inline-block;margin:0 0 8px 8px;font:500 12px/1 var(--font-family-sans);color:var(--cool-500)}
+/* fotos en la línea de tiempo */
+.tr-av{display:inline-flex;vertical-align:middle;margin:0 10px 8px 0}
+.tr-av img{display:block;width:34px;height:34px;border-radius:50%;object-fit:cover;object-position:50% 12%;border:2px solid var(--brand-paper-2);box-shadow:0 0 0 1px color-mix(in srgb,var(--brand-ink) 10%,transparent);background:var(--brand-ink)}
+.tr-av--team img+img{margin-left:-10px}
+.tr-i.boss .tr-av img{box-shadow:0 0 0 1px color-mix(in srgb,var(--brand-accent) 35%,transparent)}
+.tr-b .tr-org,.tr-b .tr-note{vertical-align:middle}
+/* compacto: foto, título, empresa y nota en una sola línea */
+.tr-b{display:flex;flex-wrap:wrap;align-items:center;column-gap:10px;row-gap:6px;padding-bottom:26px}
+.tr-b .tr-av{order:1;margin:0}
+.tr-b h3{order:2;margin:0}
+.tr-b .tr-org{order:3;margin:0}
+.tr-b .tr-note{order:4;margin:0}
+.tr-b p{order:5;flex-basis:100%;margin-top:2px}
+.tr-dot{top:12px}
+.tr-i:not(:has(.tr-av)) .tr-dot{top:8px}
+.tr-y{line-height:34px}
+.tr-sep{margin-bottom:14px}
+@media (max-width:639px){.tr-y{line-height:30px}.tr-b h3{font-size:18px}}
+@media (max-width:639px){.tr-b h3{flex:1 1 0;min-width:0}.tr-av--team+h3,.tr-i.boss h3{flex:1 1 100%}}
+@media (max-width:639px){.tr-av+.tr-org~h3,.tr-b .tr-av~h3{flex:0 0 calc(100% - 44px)}.tr-i.boss .tr-av--team~h3{flex:1 1 100%}}
+@media (min-width:640px){.tr-b p{text-align:justify;hyphens:auto;-webkit-hyphens:auto}}

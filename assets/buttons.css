@@ -1,0 +1,77 @@
+/* Sistema de botones — una sola lógica de hover/pressed/foco para todo el sitio.
+   Reglas:  relleno → se oscurece · fantasma/contorno/icono → velo del 10 % del color del texto · link de texto → subrayado.
+   Tamaños: md 52px (base) · sm 42px (navbar). Transición única de 150ms. */
+:root{--hover-tint:10%;--press-tint:16%;--btn-md:52px;--btn-sm:42px;--btn-ease:150ms ease}
+
+/* ---- Base común ---- */
+a.rounded-pill,button.rounded-pill,header.fixed nav>a.rounded-\[10px\],header.fixed nav button.rounded-\[10px\],header.fixed button[aria-label="Menu"],button.size-12,.btn-ghost{
+  transition:background-color var(--btn-ease),color var(--btn-ease),border-color var(--btn-ease),opacity var(--btn-ease)}
+
+/* ---- Tamaños ---- */
+a.rounded-pill.px-7,button.rounded-pill.px-7{min-height:var(--btn-md);padding-top:0;padding-bottom:0;font-size:var(--body-m-size);line-height:1;box-sizing:border-box}
+a.rounded-pill.px-7.h-\[42px\]{height:var(--btn-sm);min-height:var(--btn-sm)}
+
+/* ---- Relleno: primario (acento) ---- */
+a.rounded-pill.bg-accent-base:hover,button.rounded-pill.bg-accent-base:hover{background-color:var(--accent-hover)}
+a.rounded-pill.bg-accent-base:active,button.rounded-pill.bg-accent-base:active{background-color:color-mix(in srgb,var(--accent-hover) 88%,var(--brand-ink))}
+
+/* ---- Relleno: oscuro (ink) ---- */
+a.rounded-pill.bg-ink:hover,button.rounded-pill.bg-ink:hover{background-color:var(--cool-700)}
+a.rounded-pill.bg-ink:active,button.rounded-pill.bg-ink:active{background-color:color-mix(in srgb,var(--cool-700) 85%,var(--brand-ink))}
+
+/* ---- Contorno (mide igual que los demás: el borde se descuenta del padding) ---- */
+a.rounded-pill.border,button.rounded-pill.border{border-width:1px;box-sizing:border-box}
+a.rounded-pill.border:hover,button.rounded-pill.border:hover{background-color:color-mix(in srgb,currentColor var(--hover-tint),transparent)}
+a.rounded-pill.border:active,button.rounded-pill.border:active{background-color:color-mix(in srgb,currentColor var(--press-tint),transparent)}
+
+/* ---- Fantasma: navbar, menú móvil, flechas del carrusel ---- */
+header.fixed nav>a.rounded-\[10px\]:hover,header.fixed nav button.rounded-\[10px\]:hover,header.fixed button[aria-label="Menu"]:hover,button.size-12:hover{background:color-mix(in srgb,currentColor var(--hover-tint),transparent)!important;opacity:1}
+header.fixed nav>a.rounded-\[10px\]:active,header.fixed nav button.rounded-\[10px\]:active,header.fixed button[aria-label="Menu"]:active,button.size-12:active{background:color-mix(in srgb,currentColor var(--press-tint),transparent)!important}
+button.size-12{background:transparent}
+
+/* ---- Links de texto: mismo gesto en todos (subrayado al pasar el mouse) ---- */
+a.text-accent-base.inline-flex,a.text-ink\/60.inline-flex,footer a.transition-colors{text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px;transition:color var(--btn-ease),text-decoration-color var(--btn-ease)}
+a.text-accent-base.inline-flex:hover,a.text-ink\/60.inline-flex:hover,footer a.transition-colors:hover{text-decoration-color:currentColor;opacity:1}
+a.text-accent-base.inline-flex:hover{color:var(--accent-hover)}
+footer a.underline:hover{text-decoration-color:currentColor}
+
+/* ---- Foco con teclado: mismo anillo en todos los controles (DS: 2px currentColor, offset 2) ---- */
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+a.rounded-pill:focus-visible,button.rounded-pill:focus-visible{outline-color:var(--brand-accent)}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid color-mix(in srgb,var(--ring) 50%,transparent);outline-offset:4px;border-radius:var(--radius-sm)}
+
+/* ---- Desactivado ---- */
+a.rounded-pill:disabled,button.rounded-pill:disabled{opacity:.5;pointer-events:none}
+@media (prefers-reduced-motion:reduce){a,button{transition:none!important}}
+
+/* ---- Todos los botones secundarios (contorno, claros, sobre oscuro): al pasar el mouse pasan al azul de acento ---- */
+a.rounded-pill.border:hover,button.rounded-pill.border:hover,
+.pd-en:hover .pd-cta,.pd-cta:hover,
+.bz-btn--g:hover,.bz-btn--d:hover,.bo-btn-l:hover,.bx-tab:hover,.hv-cta:hover{
+  background-color:var(--brand-accent)!important;border-color:var(--brand-accent)!important;color:var(--brand-on-accent)!important}
+a.rounded-pill.border:active,button.rounded-pill.border:active,.pd-cta:active,.bz-btn--g:active,.bz-btn--d:active,.bo-btn-l:active{
+  background-color:var(--accent-hover)!important;border-color:var(--accent-hover)!important;color:var(--brand-on-accent)!important}
+
+/* ==== Sistema unificado de botones (guía de estilo) ====
+   Tamaños: lg 52px · 16px · 500 · padding 28 | sm 44px · 15px · 500 · padding 22.  Siempre Host Grotesk, pill, flecha → opcional.
+   Variantes: primario (acento) · secundario (contorno ink 20 %) · oscuro (ink) · sobre oscuro (contorno blanco 28 %) · link (texto + flecha).
+   Hover: todos pasan a acento (primario se oscurece). */
+:root{--btn-sm:44px;--btn-fs:16px;--btn-fs-sm:15px;--btn-fw:500;--btn-px:28px;--btn-px-sm:22px;--btn-line:color-mix(in srgb,var(--brand-ink) 20%,transparent)}
+.btn,a.rounded-pill.px-7,button.rounded-pill.px-7,.bz-btn,.pd-cta,.bz-more{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--radius-pill);font-family:var(--font-family-display)!important;font-weight:var(--btn-fw)!important;line-height:1!important;white-space:nowrap;text-decoration:none;box-sizing:border-box}
+.btn,a.rounded-pill.px-7,button.rounded-pill.px-7,.bz-btn{height:var(--btn-md);min-height:var(--btn-md);padding:0 var(--btn-px)!important;font-size:var(--btn-fs)!important}
+.btn--sm,a.rounded-pill.px-7.h-\[42px\],.pd-cta,.bz-more{height:var(--btn-sm)!important;min-height:var(--btn-sm)!important;padding:0 var(--btn-px-sm)!important;font-size:var(--btn-fs-sm)!important}
+.btn--primary{background:var(--brand-accent);color:var(--brand-on-accent)}
+.btn--primary:hover{background:var(--accent-hover)}
+.btn--secondary,.pd-en .pd-cta,.bz-more,section.sec-cta .mt-7 a.cta-2,a.rounded-pill.border,.bo-btn-l{background:transparent;border:1px solid var(--btn-line)!important;color:var(--brand-ink)}
+.btn--dark{background:var(--brand-ink);color:var(--brand-paper-2)}
+.btn--on-dark{border:1px solid rgba(255,255,255,.28);color:var(--brand-paper-2)}
+.btn--secondary:hover,.btn--dark:hover,.btn--on-dark:hover,.bz-more:hover{background:var(--brand-accent)!important;border-color:var(--brand-accent)!important;color:var(--brand-on-accent)!important}
+.btn-link,.cx-more{display:inline-flex;align-items:center;gap:8px;font:500 15px/1 var(--font-family-display)!important;color:var(--brand-accent)!important;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px;transition:text-decoration-color .15s}
+.btn-link:hover,.cx-more:hover{text-decoration-color:currentColor}
+/* CTA final: mismo botón que el resto (sin anillo, 16px) */
+section.sec-cta .mt-7 a{font-size:var(--btn-fs)!important}
+section.sec-cta .mt-7 a:first-child{box-shadow:none!important}
+section.sec-cta .mt-7 a.cta-2{background:transparent!important}
+/* Formularios: el envío es primario */
+form button[type=submit].rounded-pill{background:var(--brand-accent)!important;color:var(--brand-on-accent)!important}
+form button[type=submit].rounded-pill:hover{background:var(--accent-hover)!important}
