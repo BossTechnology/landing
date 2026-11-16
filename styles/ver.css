@@ -1,0 +1,164 @@
+/* Home · «No puedes decidir lo que no ves»: las capacidades del líder se encienden en cadena cuando aparece la visibilidad.
+   Fondo claro, tipografía grande, tokens del DS. */
+.vr{padding:clamp(72px,9vw,128px) 20px clamp(64px,8vw,112px);background:var(--brand-paper);overflow:hidden}
+.vr-in{max-width:var(--container-max,1152px);margin:0 auto;text-align:center}
+.vr-eb{margin:0;font:600 12px/1 var(--font-family-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--brand-accent)}
+.vr-h{margin:14px 0 0;text-align:center;text-wrap:balance}
+.vr-h span{display:block}
+
+/* cadena de capacidades */
+.vr-chain{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:clamp(18px,3.4vw,48px);margin:clamp(44px,6vw,72px) 0 0;padding:0;list-style:none}
+.vr-w{position:relative;display:grid;justify-items:center;gap:10px}
+.vr-n{font:600 12px/1 var(--font-family-sans);letter-spacing:.14em;color:var(--cool-300);transition:color .5s}
+.vr-w b{position:relative;display:block;font:700 clamp(34px,5vw,66px)/1 var(--font-family-display);letter-spacing:-.03em;text-transform:uppercase;
+  color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--brand-ink) 22%,transparent);transition:-webkit-text-stroke-color .5s}
+.vr-w b::after{content:attr(data-t);position:absolute;inset:0;color:var(--brand-ink);-webkit-text-stroke:0;
+  background:linear-gradient(100deg,var(--brand-ink) 0%,var(--brand-ink) 40%,var(--brand-accent) 50%,var(--brand-ink) 60%,var(--brand-ink) 100%) 100% 0/300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  clip-path:inset(0 100% 0 0);transition:clip-path .55s cubic-bezier(.3,.7,.2,1)}
+.vr-w.on b{-webkit-text-stroke-color:transparent}
+.vr-w.on b::after{clip-path:inset(0 0 0 0);animation:vr-shine 1.4s .4s ease-out both}
+.vr-w.on .vr-n{color:var(--brand-accent)}
+@keyframes vr-shine{from{background-position:100% 0}to{background-position:0 0}}
+/* conector entre capacidades */
+.vr-w:not(:last-child)::after{content:"";position:absolute;left:calc(100% + 4px);bottom:.5em;width:calc(clamp(18px,3.4vw,48px) - 8px);height:2px;font-size:clamp(34px,5vw,66px);
+  background:linear-gradient(90deg,var(--brand-accent),var(--brand-accent)) 0 0/0% 100% no-repeat,color-mix(in srgb,var(--brand-ink) 12%,transparent);transition:background-size .45s ease}
+.vr-w.on:not(:last-child)::after{background-size:100% 100%,auto;transition-delay:.3s}
+/* el primer paso: el ojo que se abre */
+.vr-w:first-child b::before{content:"";position:absolute;left:50%;top:50%;width:150%;height:180%;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--brand-accent) 24%,transparent),transparent);opacity:0;transition:opacity .6s;z-index:-1}
+.vr-w.on:first-child b::before{opacity:1}
+
+/* contraste: cuándo te enteras */
+.vr-vs{display:flex;justify-content:center;align-items:center;gap:clamp(20px,4vw,56px);margin-top:clamp(44px,6vw,72px)}
+.vr-a,.vr-b{display:grid;gap:8px;justify-items:center;transition:opacity .6s,transform .6s}
+.vr-vs b{font:700 clamp(30px,4vw,52px)/1 var(--font-family-display);letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+.vr-vs span{font:500 14px/1.3 var(--font-family-sans);color:var(--muted-foreground)}
+.vr-a b{color:var(--status-bad-ink,var(--destructive))}
+.vr-b b{color:var(--brand-accent)}
+.vr-ar{width:clamp(40px,6vw,80px);height:2px;background:color-mix(in srgb,var(--brand-ink) 18%,transparent);position:relative}
+.vr-ar::after{content:"";position:absolute;right:-1px;top:50%;width:9px;height:9px;border-top:2px solid color-mix(in srgb,var(--brand-ink) 30%,transparent);border-right:2px solid color-mix(in srgb,var(--brand-ink) 30%,transparent);transform:translateY(-50%) rotate(45deg)}
+.vr:not(.is-on) .vr-b{opacity:.25}
+.vr.is-on .vr-a{opacity:.3}
+.vr.is-on .vr-b{transform:scale(1.06)}
+
+@media (max-width:719px){
+  .vr-chain{flex-direction:column;align-items:center;gap:18px}
+  .vr-w{grid-auto-flow:column;align-items:center;gap:14px}
+  .vr-w b{font-size:clamp(40px,12vw,56px)}
+  .vr-w:not(:last-child)::after{left:50%;top:calc(100% + 2px);bottom:auto;width:2px;height:14px;transform:translateX(-50%);
+    background:linear-gradient(180deg,var(--brand-accent),var(--brand-accent)) 0 0/100% 0% no-repeat,color-mix(in srgb,var(--brand-ink) 12%,transparent)}
+  .vr-w.on:not(:last-child)::after{background-size:100% 100%,auto}
+  .vr-vs{gap:16px}
+  .vr-vs span{font-size:12px;max-width:130px;text-align:center}
+}
+@media (prefers-reduced-motion:reduce){.vr-w b::after,.vr-w b,.vr-a,.vr-b,.vr-w::after{transition:none;animation:none}}
+/* «Ver» es la llave: se enciende en el color de acento */
+.vr-w:first-child b::after{background:linear-gradient(100deg,var(--brand-accent) 0%,var(--brand-accent) 40%,var(--indigo-300) 50%,var(--brand-accent) 60%,var(--brand-accent) 100%) 100% 0/300% 100%;-webkit-background-clip:text;background-clip:text}
+
+/* ───── v2 · dirigido al liderazgo: isométrico de la empresa + cadena compacta ───── */
+.vr2 .vr-head{display:grid;justify-items:center;gap:12px}
+.vr2 .vr-h{margin:0}
+.vr2 .vr-sub{margin:0;max-width:620px;font-size:var(--body-l-size,18px);line-height:1.45;color:var(--muted-foreground);text-wrap:balance}
+.vr2 .vr-grid{display:grid;gap:28px;align-items:center;margin-top:clamp(28px,4vw,48px);text-align:left}
+@media (min-width:1024px){.vr2 .vr-grid{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:40px}}
+/* isométrico */
+
+.vz-img{display:block;width:100%;height:auto;filter:grayscale(1) brightness(1.04) contrast(.92);opacity:.72;transition:filter .9s ease,opacity .9s ease}
+.vr2:not([data-step="0"]) .vz-img{filter:none;opacity:1}
+.vz-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.vz-ln{fill:none;stroke:var(--brand-accent);stroke-width:.35;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset .9s ease calc(var(--i)*.09s),opacity .3s}
+.vr2:not([data-step="0"]) .vz-ln{stroke-dashoffset:0;opacity:.85}
+.vz-pt{fill:var(--brand-accent);opacity:0;transition:opacity .4s calc(var(--i)*.09s)}
+.vr2:not([data-step="0"]) .vz-pt{opacity:1}
+.vz-hub{position:absolute;display:grid;place-items:center;width:clamp(34px,4.2vw,52px);aspect-ratio:1;border-radius:30%;transform:translate(-50%,-50%) scale(.6);background:var(--brand-accent);opacity:0;transition:opacity .5s,transform .5s;box-shadow:0 0 0 0 color-mix(in srgb,var(--brand-accent) 40%,transparent)}
+.vz-hub img{width:62%;height:auto}
+.vr2:not([data-step="0"]) .vz-hub{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.vr2[data-step="3"] .vz-hub,.vr2[data-step="4"] .vz-hub{animation:vz-ping 1.6s ease-out infinite}
+@keyframes vz-ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--brand-accent) 45%,transparent)}100%{box-shadow:0 0 0 22px color-mix(in srgb,var(--brand-accent) 0%,transparent)}}
+.vz-lab{position:absolute;transform:translate(-50%,-50%) translateY(6px);padding:5px 10px;border-radius:var(--radius-pill);background:var(--card);border:1px solid var(--indigo-100);font:600 12px/1 var(--font-family-display);color:var(--brand-ink);white-space:nowrap;opacity:0;transition:opacity .45s calc(var(--i)*.08s),transform .45s calc(var(--i)*.08s)}
+.vr2[data-step="2"] .vz-lab,.vr2[data-step="3"] .vz-lab,.vr2[data-step="4"] .vz-lab{opacity:1;transform:translate(-50%,-50%)}
+.vz-ok{position:absolute;transform:translate(-50%,-50%) scale(.7);padding:5px 10px;border-radius:var(--radius-pill);background:var(--status-ok,#1f9d55);font:700 12px/1 var(--font-family-display);color:#fff;white-space:nowrap;opacity:0;transition:opacity .4s calc(var(--i)*.12s),transform .4s calc(var(--i)*.12s)}
+.vr2[data-step="4"] .vz-ok{opacity:1;transform:translate(-50%,-50%) scale(1)}
+/* cadena compacta, vertical, a la derecha */
+.vr2 .vr-chain{flex-direction:column;align-items:stretch;gap:14px;margin:0}
+.vr2 .vr-w{grid-template-columns:auto 1fr;grid-template-rows:auto auto;justify-items:start;column-gap:14px;row-gap:2px;align-items:baseline}
+.vr2 .vr-w .vr-n{grid-row:1/3}
+.vr2 .vr-w b{font-size:clamp(30px,3.4vw,46px)}
+.vr2 .vr-w small{grid-column:2;font:500 14px/1.3 var(--font-family-sans);color:var(--muted-foreground);opacity:.5;transition:opacity .5s}
+.vr2 .vr-w.on small{opacity:1}
+.vr2 .vr-w:not(:last-child)::after{display:none}
+.vr2 .vr-vs{justify-content:flex-start;margin-top:28px}
+.vr2 .vr-vs b{font-size:clamp(26px,2.8vw,38px)}
+@media (max-width:719px){.vr2 .vr-chain{align-items:stretch}.vr2 .vr-w{grid-auto-flow:row}.vz-lab,.vz-ok{font-size:10px;padding:4px 7px}}
+.vz-img{mix-blend-mode:multiply;-webkit-mask-image:radial-gradient(75% 80% at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(75% 80% at 50% 50%,#000 70%,transparent 100%)}
+.vr2 .vr-vs{display:grid;grid-template-columns:auto auto auto;justify-content:start;gap:18px;align-items:center}
+.vr2 .vr-ar{width:40px}
+.vr2 .vr-a,.vr2 .vr-b{justify-items:start;text-align:left}
+.vr2 .vr-vs span{max-width:170px}
+
+/* ───── v5 · animación continua: las áreas se encienden, la data sube al núcleo y sale como acciones inteligentes que cruzan áreas ───── */
+@property --h0{syntax:'<length-percentage>';inherits:false;initial-value:0%}
+@property --h1{syntax:'<length-percentage>';inherits:false;initial-value:0%}
+@property --h2{syntax:'<length-percentage>';inherits:false;initial-value:0%}
+@property --h3{syntax:'<length-percentage>';inherits:false;initial-value:0%}
+@property --h4{syntax:'<length-percentage>';inherits:false;initial-value:0%}
+.mz{position:relative;margin:0}
+.mz-img{display:block;width:100%;height:auto;mix-blend-mode:multiply}
+.mz-base{filter:grayscale(1) brightness(1.04);opacity:.42;transition:filter 1.6s ease,opacity 1.6s ease}
+.vr5.act .mz-base{filter:none;opacity:1}
+.mz-col{position:absolute;inset:0;width:100%;height:100%;filter:saturate(1.6);
+  transition:--h0 1s cubic-bezier(.3,.7,.2,1) .1s,--h1 1s cubic-bezier(.3,.7,.2,1) .4s,--h2 1s cubic-bezier(.3,.7,.2,1) .7s,--h3 1s cubic-bezier(.3,.7,.2,1) 1s,--h4 1s cubic-bezier(.3,.7,.2,1) 1.3s}
+.vr5.go .mz-col{--h0:var(--r0);--h1:var(--r1);--h2:var(--r2);--h3:var(--r3);--h4:var(--r4)}
+.mz-tint{position:absolute;width:var(--w);aspect-ratio:1.8;border-radius:50%;transform:translate(-50%,-50%) scale(.3);background:radial-gradient(closest-side,color-mix(in srgb,var(--brand-accent) 34%,transparent),transparent);mix-blend-mode:multiply;opacity:0;pointer-events:none;
+  transition:opacity .9s ease calc(var(--i)*.3s + .1s),transform 1s cubic-bezier(.3,.7,.2,1) calc(var(--i)*.3s + .1s)}
+.vr5.go .mz-tint{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.vr5.act .mz-tint{opacity:.4}
+.mz-lab{position:absolute;transform:translate(-50%,-50%) translateY(6px);padding:5px 10px;border-radius:var(--radius-pill);background:var(--card);border:1px solid var(--indigo-100);box-shadow:0 4px 14px -6px color-mix(in srgb,var(--brand-ink) 25%,transparent);font:600 12px/1 var(--font-family-display);color:var(--brand-ink);white-space:nowrap;opacity:0;
+  transition:opacity .45s calc(var(--i)*.3s + .4s),transform .45s calc(var(--i)*.3s + .4s),border-color .3s,background .3s,color .3s}
+.vr5.go .mz-lab{opacity:1;transform:translate(-50%,-50%)}
+.mz-lab.hl{background:var(--brand-accent);border-color:var(--brand-accent);color:var(--brand-on-accent);transition-delay:0s}
+/* data que sube desde cada área */
+.mz-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.mz-ln{fill:none;stroke:var(--brand-accent);stroke-width:2;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;opacity:.4;transition:stroke-dashoffset 1.2s cubic-bezier(.5,0,.2,1) calc(var(--i)*.12s),opacity .3s,stroke-width .3s}
+.vr5.flow .mz-ln{stroke-dashoffset:0}
+.mz-up{fill:none;stroke:var(--brand-accent);stroke-width:5;stroke-linecap:round;stroke-dasharray:1.5 10.5;opacity:0;transition:opacity .5s .9s}
+.vr5.flow .mz-up{opacity:.9;animation:mz-up 1.1s linear infinite;animation-delay:calc(var(--i)*-.22s)}
+@keyframes mz-up{to{stroke-dashoffset:-12}}
+.mz-ln.hl{opacity:.9;stroke-width:3}
+.mz-src{fill:var(--brand-accent);opacity:0;transition:opacity .4s calc(var(--i)*.3s + .3s)}
+.vr5.go .mz-src{opacity:1}
+/* entendimiento colectivo: el arco que une las áreas que explican una misma acción */
+.mz-arc{fill:none;stroke:var(--brand-accent);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;opacity:0;transition:stroke-dashoffset .9s cubic-bezier(.5,0,.2,1),opacity .4s}
+.mz-arc.hl{stroke-dashoffset:0;opacity:.9}
+.mz-ring{position:absolute;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid var(--brand-accent);opacity:0}
+.mz-ring.hl{animation:mz-ring 1.4s ease-out infinite}
+@keyframes mz-ring{0%{opacity:1;width:14px;height:14px}100%{opacity:0;width:64px;height:64px}}
+/* núcleo */
+.mz-hub{position:absolute;z-index:2;display:grid;place-items:center;width:clamp(40px,4.6vw,58px);aspect-ratio:1;border-radius:30%;background:var(--brand-accent);transform:translate(-50%,-50%) scale(.4);opacity:0;box-shadow:0 12px 30px -8px color-mix(in srgb,var(--brand-accent) 60%,transparent);transition:opacity .5s .8s,transform .6s cubic-bezier(.3,1.5,.5,1) .8s}
+.mz-hub img{width:62%;height:auto}
+.vr5.flow .mz-hub{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.vr5.act .mz-hub{animation:mz-ping 1.5s ease-out infinite}
+@keyframes mz-ping{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--brand-accent) 45%,transparent)}100%{box-shadow:0 0 0 24px color-mix(in srgb,var(--brand-accent) 0%,transparent)}}
+/* acciones inteligentes: tarjetas que salen del núcleo */
+.mz-cards{position:absolute;z-index:3;transform:translateY(-50%);width:max-content;max-width:46%}
+.mz-card{position:absolute;left:0;top:0;transform:translate(-30px,-50%) scale(.6);transform-origin:0 50%;display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:3px;align-items:center;padding:10px 14px 10px 10px;border-radius:14px;background:var(--card);border:1px solid var(--indigo-100);box-shadow:0 14px 30px -14px color-mix(in srgb,var(--brand-ink) 35%,transparent);white-space:nowrap;opacity:0;transition:opacity .4s ease,transform .55s cubic-bezier(.3,1.4,.5,1)}
+.mz-card.on{opacity:1;transform:translate(0,-50%) scale(1)}
+.mz-card.out{opacity:0;transform:translate(14px,-90%) scale(.96);transition:opacity .5s,transform .6s ease-in}
+.mz-card i{grid-row:1/3;display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--brand-accent);color:var(--brand-on-accent)}
+.mz-card i svg{width:16px;height:16px}
+.mz-card b{font:600 13px/1.2 var(--font-family-display);color:var(--brand-ink)}
+.mz-card small{font:500 11px/1.2 var(--font-family-sans);color:var(--muted-foreground)}
+.mz-card small em{font-style:normal;color:var(--brand-accent);font-weight:600}
+/* cadena: se enciende una vez y se queda */
+.vr5 .vr-chain{gap:22px}
+@media (max-width:719px){.mz-lab{font-size:10px;padding:4px 7px}.mz-up{stroke-width:7}.mz-ln{stroke-width:3}.mz-arc{stroke-width:3.4}.mz-card{padding:7px 10px 7px 7px;column-gap:7px}.mz-card i{width:22px;height:22px;border-radius:7px}.mz-card i svg{width:12px;height:12px}.mz-card b{font-size:11px}.mz-card small{font-size:9px}}
+@media (prefers-reduced-motion:reduce){.mz-base,.mz-col,.mz-tint,.mz-lab,.mz-ln,.mz-hub,.mz-card,.mz-arc{transition:none}.mz-up,.mz-ring,.mz-hub{animation:none!important}}
+/* la etapa activa va en morado; las ya recorridas quedan en tinta (antes solo «Ver» era morado, siempre) */
+.vr5 .vr-w b::after{background:linear-gradient(100deg,var(--brand-ink) 0%,var(--brand-ink) 40%,var(--brand-accent) 50%,var(--brand-ink) 60%,var(--brand-ink) 100%) 100% 0/300% 100%;-webkit-background-clip:text;background-clip:text;transition:clip-path .55s cubic-bezier(.3,.7,.2,1),color .5s}
+.vr5 .vr-w:first-child b::before{display:none}
+.vr5 .vr-w.cur b::after{background:linear-gradient(100deg,var(--brand-accent) 0%,var(--brand-accent) 40%,var(--indigo-300) 50%,var(--brand-accent) 60%,var(--brand-accent) 100%) 100% 0/300% 100%;-webkit-background-clip:text;background-clip:text}
+/* palabras visibles desde el inicio: la animación la lleva la gráfica; el morado solo acompaña la etapa activa */
+.vr5 .vr-w b{color:transparent;-webkit-text-stroke-color:transparent!important}
+.vr5 .vr-w b::after{clip-path:inset(0 0 0 0)!important;animation:none!important;background-position:0 0!important}
+.vr5 .vr-w .vr-n{color:var(--brand-accent)}
+.vr5 .vr-w small{opacity:1!important}

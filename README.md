@@ -1,19 +1,37 @@
 # Boss.Technology · landing
 
-Sitio estático (ES/EN) exportado del artefacto «Website Boss». No requiere build: Vercel lo sirve tal cual (Framework: Other, sin build command, output = raíz).
+Sitio de Boss.Technology (ES/EN) hecho con **Next.js 16** (App Router, TypeScript). Todas las páginas se generan como estáticas; lo único que corre en servidor es la API del formulario.
 
-La fuente de verdad es el artefacto y cada sincronización reemplaza estos archivos. **Los ajustes de abajo se hicieron sobre la exportación: llévalos al artefacto o vuelve a aplicarlos tras cada sincronización.**
+## Desarrollo
 
-## Ajustes sobre la exportación
+```bash
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # compilación de producción (incluye la revisión de tipos)
+```
 
-- **Formularios reales** (Contacto y Reclutamiento): `assets/site.js` envía los datos a `/api/contact` (función de Vercel en `api/contact.js`), con validación, mensajes ES/EN y un campo trampa anti-spam.
-- **SEO**: en cada página, entre `<!-- seo -->` y `<!-- /seo -->`: `canonical`, `hreflang` ES/EN, `og:url`, `og:image` (`assets/brand/og-es.jpg` / `og-en.jpg`) y Twitter card. Además `robots.txt`, `sitemap.xml` y `404.html`.
-- Se quitó «Web: » del título de la portada.
-- Se quitó `es/guia-estilo.html` (página interna) y ~21 MB de recursos que ninguna página usaba.
+## Estructura
 
-## Configurar el envío de formularios
+| Ruta | Qué hay |
+| --- | --- |
+| `app/(es)/` | Páginas en español. `page.tsx` es la portada (`/`); el resto cuelga de `es/` (`/es/compania`, …). |
+| `app/(en)/en/` | Páginas en inglés (`/en`, `/en/compania`, …). |
+| `app/api/contact/route.ts` | Recibe los formularios de Contacto y Reclutamiento y los envía por correo. |
+| `app/sitemap.ts`, `app/robots.ts`, `app/global-not-found.tsx` | `sitemap.xml`, `robots.txt` y la página 404. |
+| `components/` | `Header` (menú, tema claro/oscuro, menú móvil, idioma), `FooterEs`/`FooterEn`, `SiteShell` (documento común) y `Fx`. |
+| `lib/routes.ts` | Todas las rutas y su equivalente en el otro idioma (selector de idioma, `hreflang`, sitemap y redirecciones). |
+| `lib/seo.ts` | `pageMetadata()`: título, descripción, canonical, `hreflang` y Open Graph de cada página. |
+| `lib/fx/` | Animaciones y widgets que trabajan sobre el DOM (aparición al hacer scroll, abejas, calculadoras, pestañas de BzzzBX, canvas de IA aplicada…). `Fx` los ejecuta en cada navegación y los deshace al salir de la página. |
+| `styles/` | CSS del sitio. Se carga entero en todas las páginas desde `SiteShell`. |
+| `public/assets/` | Imágenes, videos y fuentes. |
 
-La función envía correo con [Resend](https://resend.com). En Vercel → Project → Settings → Environment Variables:
+Cada idioma tiene su propio layout raíz (`<html lang>`), así que pasar de español a inglés recarga la página; dentro de un idioma la navegación es instantánea.
+
+Las URLs antiguas terminadas en `.html` redirigen a las nuevas (`/es/compania.html` → `/es/compania`), configurado en `next.config.ts`.
+
+## Formularios
+
+La API envía el correo con [Resend](https://resend.com). En Vercel → Project → Settings → Environment Variables:
 
 | Variable | Obligatoria | Ejemplo |
 | --- | --- | --- |
@@ -23,4 +41,12 @@ La función envía correo con [Resend](https://resend.com). En Vercel → Projec
 
 Sin esas variables, los formularios muestran un error con el correo de contacto como alternativa.
 
-El dominio usado en `canonical`, `sitemap.xml` y `og:image` es `https://boss.technology`.
+## Despliegue
+
+Vercel detecta Next.js (`vercel.json` fija `"framework": "nextjs"`). Si el proyecto estaba configurado como sitio estático (Framework "Other", sin build), revisa en Settings → Build and Deployment que el Framework Preset sea **Next.js** y que Output Directory y Build Command estén vacíos o en sus valores por defecto.
+
+El dominio usado en canonical, sitemap e imágenes de Open Graph es `https://boss.technology` (`lib/seo.ts`).
+
+## Origen
+
+El sitio nació como un artefacto exportado a HTML estático. Se migró a Next.js convirtiendo cada página a JSX y portando su JavaScript a React/TypeScript, y se comprobó que cada página se ve igual que la versión estática. A partir de ahora la fuente de verdad es este repositorio: volver a sincronizar desde el artefacto sobrescribiría la migración.

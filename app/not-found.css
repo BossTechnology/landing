@@ -1,0 +1,17 @@
+html:has(body.nf),body.nf{margin:0;height:100%}
+body.nf{background:#050510;color:#fff;font-family:"Host Grotesk",var(--font-inter),ui-sans-serif,system-ui,sans-serif;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 16px;box-sizing:border-box;
+  background-image:radial-gradient(60% 50% at 50% 60%,rgba(78,73,242,.28),transparent 70%)}
+body.nf .logo{position:absolute;top:28px;left:50%;transform:translateX(-50%)}
+body.nf .logo img{display:block;height:23px;width:auto;filter:brightness(0) invert(1)}
+body.nf .code{font-size:clamp(88px,22vw,180px);font-weight:700;line-height:1;letter-spacing:-.04em;margin:0;
+  background:linear-gradient(180deg,#fff,color-mix(in srgb,var(--brand-accent) 62%,#fff));-webkit-background-clip:text;background-clip:text;color:transparent}
+body.nf h1{font-size:clamp(22px,4vw,32px);font-weight:600;margin:16px 0 8px}
+body.nf p{color:rgba(255,255,255,.7);margin:0 0 4px;font-size:16px;line-height:1.5}
+body.nf .en{font-size:14px;color:rgba(255,255,255,.5)}
+body.nf .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:32px}
+body.nf a.btn{display:inline-flex;align-items:center;border-radius:999px;padding:13px 26px;text-decoration:none;font-weight:500;font-size:15px}
+body.nf a.pri{background:var(--brand-accent);color:#fff}
+body.nf a.pri:hover{background:color-mix(in srgb,var(--brand-accent) 85%,#fff)}
+body.nf a.sec{border:1px solid rgba(255,255,255,.25);color:#fff}
+body.nf a.sec:hover{border-color:#fff}
