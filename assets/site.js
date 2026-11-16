@@ -178,13 +178,44 @@
     btns[1].addEventListener("click", function () { go(1); });
   });
 
-  /* ---------- Formulario de contacto (maqueta: no envía) ---------- */
+  /* ---------- Formularios de contacto y reclutamiento: envían a /api/contact ---------- */
+  var EN = C.lang === "en";
+  var MSG = {
+    required: EN ? "Please fill in your name, a valid email and a message." : "Completa tu nombre, un correo válido y un mensaje.",
+    sending: EN ? "Sending…" : "Enviando…",
+    ok: EN ? "Thanks! We received your message and will get back to you soon." : "¡Gracias! Recibimos tu mensaje y te responderemos pronto.",
+    fail: EN ? "We couldn't send your message. Please try again or write to admin@boss.technology." : "No pudimos enviar tu mensaje. Inténtalo de nuevo o escríbenos a admin@boss.technology."
+  };
   document.querySelectorAll("form").forEach(function (f) {
+    var hp = document.createElement("input"); // trampa anti-spam: invisible para personas
+    hp.type = "text"; hp.name = "website"; hp.tabIndex = -1; hp.autocomplete = "off"; hp.setAttribute("aria-hidden", "true");
+    hp.style.cssText = "position:absolute;left:-9999px;width:1px;height:1px;opacity:0";
+    f.appendChild(hp);
+    var btn = f.querySelector('button[type="submit"]');
+    function note(text, bad) {
+      var n = f.querySelector(".boss-form-note");
+      if (!n) { n = document.createElement("p"); n.className = "boss-form-note mt-4 text-body-m"; n.setAttribute("role", "status"); n.setAttribute("aria-live", "polite"); f.appendChild(n); }
+      n.textContent = text; n.style.color = bad ? "#e5484d" : "";
+      n.classList.toggle("text-accent-base", !bad);
+    }
     f.addEventListener("submit", function (e) {
       e.preventDefault();
-      var note = f.querySelector(".boss-demo-note");
-      if (!note) { note = document.createElement("p"); note.className = "boss-demo-note mt-4 text-body-m text-accent-base"; f.appendChild(note); }
-      note.textContent = C.lang === "en" ? "Demo version: the form does not send data." : "Versión maqueta: el formulario no envía datos.";
+      var data = {};
+      [].forEach.call(f.elements, function (el) { if (el.name) data[el.name] = (el.value || "").trim(); });
+      var bad = false;
+      [["firstName", !data.firstName], ["email", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || "")], ["message", !data.message]].forEach(function (r) {
+        var el = f.elements[r[0]]; if (!el) return;
+        el.setAttribute("aria-invalid", r[1] ? "true" : "false"); if (r[1]) bad = true;
+      });
+      if (bad) { note(MSG.required, true); return; }
+      data.form = /reclutamiento/.test(location.pathname) ? "reclutamiento" : "contacto";
+      data.lang = C.lang || "es"; data.page = location.href;
+      if (btn) btn.disabled = true;
+      note(MSG.sending);
+      fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); f.reset(); note(MSG.ok); })
+        .catch(function () { note(MSG.fail, true); })
+        .then(function () { if (btn) btn.disabled = false; });
     });
   });
 })();
