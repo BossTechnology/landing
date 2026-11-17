@@ -1,22 +1,21 @@
 {
   "name": "boss-landing",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
+    "copy-site": "node scripts/copy-site.mjs",
+    "predev": "node scripts/copy-site.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/copy-site.mjs",
     "build": "next build",
-    "start": "next start",
-    "lint": "tsc --noEmit"
+    "start": "next start"
   },
   "dependencies": {
-    "next": "^16.4.6",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
-  "devDependencies": {
-    "@types/node": "^26.6.6",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "parse5": "^8.1.1",
-    "typescript": "^7.0.2"
+  "engines": {
+    "node": ">=20"
   }
 }

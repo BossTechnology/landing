@@ -1,0 +1,58 @@
+/* Hero del home · video de la caja BzzzBX controlado por el scroll (no se reproduce solo).
+   Fondo negro puro, video a pantalla completa (cover), texto pequeño centrado arriba. Tipografías y colores del DS. */
+.hv{position:relative;height:300vh;background:#000;border-radius:0 0 32px 32px;overflow:clip;isolation:isolate}
+@media (min-width:640px){.hv{border-radius:0 0 40px 40px}}
+.hv-sticky{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#000}
+.hv-video{position:absolute;left:50%;top:54%;width:58vw;height:auto;aspect-ratio:16/9;object-fit:cover;background:#000;pointer-events:none;transform:translate(-50%,-50%);-webkit-mask-image:radial-gradient(closest-side,#000 58%,transparent 100%);mask-image:radial-gradient(closest-side,#000 58%,transparent 100%)}
+/* arranque casi negro: la caja aparece con el primer scroll */
+.hv-sticky::after{content:"";position:absolute;inset:0;background:#000;opacity:calc(.94 - var(--hp,0) * 11);pointer-events:none;z-index:1}
+.hv-copy{position:absolute;left:50%;top:12vh;top:12svh;opacity:var(--co,1);transform:translateX(-50%);width:min(92%,640px);text-align:center;z-index:2;display:flex;flex-direction:column;align-items:center}
+.hv-title{margin:0;font-family:var(--font-family-display);font-weight:700;font-size:clamp(26px,2.4vw,34px);line-height:1.05;letter-spacing:-.01em;color:#fff}
+.hv-sub{margin:10px 0 0;max-width:520px;font-family:var(--font-family-sans);font-size:var(--body-xs-size,14px);line-height:1.45;color:color-mix(in srgb,#fff 72%,transparent);text-wrap:balance}
+.hv-cta{margin-top:14px;display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 20px;border-radius:var(--radius-pill);font:500 14px/1 var(--font-family-display);white-space:nowrap;transition:background-color .2s}
+.hv-cta:hover{background:color-mix(in srgb,var(--brand-accent) 86%,#000)}
+.hv-cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
+/* indicador de scroll */
+.hv-cue{position:absolute;left:50%;bottom:5vh;transform:translateX(-50%);margin:0;display:flex;flex-direction:column;align-items:center;gap:10px;font:500 11px/1 var(--font-family-sans);letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,#fff 55%,transparent);opacity:calc(1 - var(--hp,0) * 12);z-index:2}
+.hv-cue i{width:1px;height:36px;background:linear-gradient(180deg,color-mix(in srgb,#fff 60%,transparent),transparent);animation:hv-cue 1.8s ease-in-out infinite;transform-origin:top}
+@keyframes hv-cue{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+@media (max-width:639px){
+  .hv-copy{top:11vh;top:11svh}
+  .hv-title{font-size:28px}
+  .hv-sub{font-size:13px;max-width:330px}
+  .hv-cta{height:36px;font-size:13px;margin-top:14px}
+}
+/* sin animación: altura normal y un cuadro fijo de la caja */
+.hv.is-static{height:100vh;height:100svh}
+@media (prefers-reduced-motion:reduce){.hv-cue i{animation:none}}
+@media (max-width:899px){.hv-video{width:85vw;top:56%}}
+/* móvil (<768px): servidor grande justo bajo el CTA y escena sticky más corta */
+@media (max-width:767px){
+  .hv{--cb:260px;--sh:calc(var(--cb) + 60px + 14.6vw);height:calc(var(--sh) + 45vh)}
+  .hv-sticky{height:var(--sh)}
+  /* el video se amplía (~140% del ancho) y se recorta centrado: el servidor completo ocupa ~77% de la pantalla */
+  .hv-video{width:140vw;max-width:none;top:calc(var(--cb) + 18px - 39.3vw);transform:translateX(-50%);-webkit-mask-image:radial-gradient(closest-side,#000 78%,transparent 100%);mask-image:radial-gradient(closest-side,#000 78%,transparent 100%)}
+  .hv-cue{bottom:10px}
+}
+/* Hero v2 · video de fondo en loop (sin scroll), difuminado a negro arriba y a los lados */
+.hv--bg{height:100vh;height:100svh;min-height:620px}
+.hv--bg .hv-sticky{position:relative;top:auto;height:100%}
+.hv--bg .hv-sticky::after{display:none}
+.hv-bgv{position:absolute;left:50%;bottom:0;height:calc(100svh - 290px);min-height:330px;width:auto;max-width:none;aspect-ratio:848/480;transform:translateX(-50%);object-fit:cover;background:#000;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 36%),linear-gradient(to right,transparent 0%,#000 18%,#000 82%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 36%),linear-gradient(to right,transparent 0%,#000 18%,#000 82%,transparent 100%);
+  mask-composite:intersect}
+.hv--bg .hv-copy{top:max(96px,12svh);width:min(92%,900px)}
+.hv--bg .hv-title{font-size:clamp(38px,5vw,64px);line-height:1.04;letter-spacing:-.02em;text-transform:uppercase;text-wrap:balance}
+.hv--bg .hv-sub{margin-top:16px;font-size:var(--body-m-size);max-width:560px;color:color-mix(in srgb,#fff 78%,transparent);text-shadow:0 1px 14px #000}
+.hv--bg .hv-cta{margin-top:20px;height:44px;padding:0 24px;font-size:15px}
+@media (max-width:767px){
+  .hv--bg{height:100svh;min-height:640px}
+  .hv--bg .hv-sticky{height:100%}
+  .hv--bg .hv-title{font-size:clamp(32px,9vw,38px)}
+  .hv--bg .hv-sub{font-size:14px}
+  .hv-bgv{top:auto;bottom:0;height:auto;width:175vw;min-height:0;transform:translateX(-50%)}
+}
+@media (prefers-reduced-motion:reduce){.hv-bgv{display:none}.hv--bg .hv-sticky{background:#000 url(home/hero-bg-poster.jpg) center bottom/auto calc(100svh - 290px) no-repeat}}
+.hv--bg .hv-tag{margin-top:18px;max-width:none;font:500 clamp(17px,1.6vw,22px)/1.35 var(--font-family-display);letter-spacing:-.005em;color:color-mix(in srgb,#fff 82%,transparent)}

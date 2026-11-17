@@ -1,0 +1,13 @@
+/* Home · Business Observability ilumina los puntos ciegos: líneas de cada área que convergen en el negocio,
+   con cajas negras que el barrido de luz revela. Canvas sobre fondo claro; tokens del DS. */
+.bc{padding:clamp(72px,9vw,120px) 20px clamp(48px,6vw,80px);background:var(--brand-paper)}
+.bc-in{max-width:var(--container-max,1152px);margin:0 auto}
+.bc-head{display:grid;justify-items:center;gap:12px;text-align:center}
+.bc-eb{margin:0;font:600 12px/1 var(--font-family-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--brand-accent)}
+.bc-h{margin:0;text-align:center;text-wrap:balance}
+.bc-h span{display:block}
+.bc-sub{margin:0;max-width:600px;font-size:var(--body-l-size,18px);line-height:1.45;color:var(--muted-foreground);text-wrap:balance}
+.bc-stage{position:relative;margin-top:clamp(20px,3vw,32px);height:clamp(360px,38vw,480px)}
+.bc-cv{display:block;width:100%;height:100%}
+.bc-alt{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:639px){.bc-stage{height:360px;margin-left:-8px;margin-right:-8px}}
