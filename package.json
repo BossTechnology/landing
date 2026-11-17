@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "copy-site": "node scripts/copy-site.mjs",
-    "predev": "node scripts/copy-site.mjs",
+    "predev": "node scripts/copy-site.mjs && node prod/build.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/copy-site.mjs",
+    "prebuild": "node scripts/copy-site.mjs && node prod/build.mjs",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "prod": "node prod/build.mjs"
   },
   "dependencies": {
     "next": "16.4.6",
