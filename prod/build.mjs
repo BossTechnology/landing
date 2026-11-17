@@ -12,6 +12,7 @@
 // Env: SITE_URL (default https://boss.technology), GA_MEASUREMENT_ID (e.g. G-XXXXXXX; no GA if empty).
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 
 const OUT = "public";
 const SITE_URL = (process.env.SITE_URL || "https://boss.technology").replace(/\/+$/, "");
@@ -76,6 +77,9 @@ for (const file of pages) {
 }
 
 /* ---------- 3. SEO and production assets in every page ---------- */
+// Social networks cache the preview image by URL: version it by content so a new image shows up.
+const OG_VERSION = Object.fromEntries(["es", "en"].map((l) =>
+  [l, createHash("sha256").update(readFileSync(`prod/static/og-${l}.jpg`)).digest("hex").slice(0, 8)]));
 const ORG = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -91,7 +95,7 @@ for (const file of pages) {
   const es = lang === "es" ? file : alt[file];
   const en = lang === "en" ? file : alt[file];
   const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || "Boss.Technology";
-  const img = `${SITE_URL}/prod/og-${lang}.jpg`;
+  const img = `${SITE_URL}/prod/og-${lang}.jpg?v=${OG_VERSION[lang]}`;
   const tags = [
     `<link rel="canonical" href="${abs(file)}"/>`,
     ...(es && en ? [

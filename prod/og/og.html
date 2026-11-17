@@ -1,0 +1,42 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../assets/site.css"><link rel="stylesheet" href="../../assets/tokens.css">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{width:1200px;height:630px;overflow:hidden}
+body{font-family:"Host Grotesk",ui-sans-serif,system-ui,sans-serif;color:#050510;
+  background:radial-gradient(60% 70% at 50% 62%,rgba(150,146,255,.20),transparent 70%),linear-gradient(82deg,#f6f6f6 30%,#e1e0f5 78%);position:relative}
+.top{position:absolute;left:56px;right:56px;top:44px;display:flex;justify-content:space-between;align-items:center}
+.wm{height:26px;width:auto;filter:brightness(0)}
+.tag{font:600 15px/1 "Host Grotesk";letter-spacing:.12em;text-transform:uppercase;color:#4e49f2}
+h1{position:absolute;left:0;right:0;top:104px;text-align:center;font:600 50px/1.06 "Host Grotesk";letter-spacing:-.02em}
+h1 b{color:#4e49f2;font-weight:600}
+h1 span{display:block;font:500 25px/1.3 "Host Grotesk";letter-spacing:-.005em;color:#4a4a5c;margin-top:12px}
+.dg{position:absolute;left:56px;right:56px;top:262px;height:330px}
+svg.ln{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.col{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-between;padding:22px 0}
+.col.l{left:0}.col.r{right:0;align-items:flex-end}
+.pill{display:flex;align-items:center;gap:12px;height:52px;padding:0 24px;border-radius:999px;background:#fff;border:2px solid #e3e1ff;
+  font:600 20px/1 "Host Grotesk";box-shadow:0 8px 20px -14px rgba(5,5,16,.35);white-space:nowrap}
+.pill i{width:10px;height:10px;border-radius:50%;background:#4e49f2;flex:none}
+.core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:252px;height:300px;border-radius:34px;background:#fff;
+  border:2px solid #e3e1ff;box-shadow:0 0 0 12px rgba(227,225,255,.6),0 30px 60px -30px rgba(78,73,242,.55);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.bee{width:104px;height:103px;background:#050510;-webkit-mask:url(../../assets/brand/isotipo.svg) center/contain no-repeat;mask:url(../../assets/brand/isotipo.svg) center/contain no-repeat}
+.bx{font:700 34px/1 "Host Grotesk";letter-spacing:-.02em}.bx em{font-style:normal;color:#4e49f2}
+.steps{font:500 15px/1 "Host Grotesk";color:#5b5b6b;letter-spacing:.02em}
+</style></head><body>
+<div class="top"><img class="wm" src="../../assets/brand/wordmark-nav.svg" alt=""><span class="tag" id="tag"></span></div>
+<h1 id="h"></h1>
+<div class="dg"><svg class="ln" id="ln"></svg>
+ <div class="col l" id="L"></div><div class="core"><div class="bee"></div><div class="bx">Bzzz<em>BX</em></div><div class="steps" id="st"></div></div><div class="col r" id="R"></div></div>
+<script>
+const T={es:{tag:"Business Observability",h:'<b>+10 años</b> de Business Observability<span>con empresas líderes mundiales</span>',st:"Recibe · Razona · Responde",L:["ERP y finanzas","Producción y planta","Logística y flota","Clima y mercado"],R:["Alertas","Predicciones","IA y agentes","Flujos automáticos"]},
+ en:{tag:"Business Observability",h:'<b>10+ years</b> of Business Observability<span>with world-leading companies</span>',st:"Receive · Reason · Respond",L:["ERP and finance","Production and plant","Logistics and fleet","Weather and markets"],R:["Alerts","Predictions","AI and agents","Automated flows"]}}[new URLSearchParams(location.search).get("l")||"es"];
+document.getElementById("tag").textContent=T.tag;document.getElementById("h").innerHTML=T.h;document.getElementById("st").textContent=T.st;
+const mk=(id,a)=>document.getElementById(id).innerHTML=a.map(t=>`<div class="pill"><i></i>${t}</div>`).join("");mk("L",T.L);mk("R",T.R);
+document.fonts.ready.then(()=>{const dg=document.querySelector(".dg").getBoundingClientRect(),core=document.querySelector(".core").getBoundingClientRect();let p="";
+ const cy=core.top+core.height/2-dg.top;
+ document.querySelectorAll("#L .pill").forEach(e=>{const r=e.getBoundingClientRect(),x1=r.right-dg.left,y1=r.top+r.height/2-dg.top,x2=core.left-dg.left-14;p+=`<path d="M${x1} ${y1} C ${x1+90} ${y1}, ${x2-80} ${cy}, ${x2} ${cy}" stroke="#a9a5f6" stroke-width="2.5" fill="none"/>`});
+ document.querySelectorAll("#R .pill").forEach(e=>{const r=e.getBoundingClientRect(),x1=r.left-dg.left,y1=r.top+r.height/2-dg.top,x2=core.right-dg.left+14;p+=`<path d="M${x2} ${cy} C ${x2+80} ${cy}, ${x1-90} ${y1}, ${x1} ${y1}" stroke="#4e49f2" stroke-width="2.5" fill="none"/>`});
+ document.getElementById("ln").innerHTML=p;document.body.dataset.ready=1});
+</script></body></html>
