@@ -32,3 +32,155 @@ form [aria-invalid="true"]{border-color:#d93036!important}
 form button[type="submit"]:disabled{opacity:.6;cursor:progress}
 
 /* ===================== 3. Design-system and mobile fixes ===================== */
+/* From the design-system and mobile audit (2026-11-17). IDs: H = broken, M = inconsistency, L = polish.
+   Some targets are styled by inline <style> in the pages, hence the higher specificity / !important. */
+
+/* ------------------------------------------------------------------ HIGH */
+
+/* H1: Engines tile grid (home, style guide). At 320–360px the engine names and subtitles spill past
+   the tile border because the text span has no min-width:0. Let the text shrink and wrap, and switch
+   to one column on very narrow phones. */
+.ef--grid .ef-t > span{min-width:0;overflow-wrap:anywhere}
+@media (max-width:374px){
+  .ef.ef--grid{grid-template-columns:minmax(0,1fr)}
+}
+
+/* H2: Blog post "AI observability" (EN /en/blog/ai-observability.html, ES /es/blog/ia-observabilidad.html).
+   The wide figure (.post-fig--wide, inline style: margin -6% at >=900px) bleeds 22px off the
+   left edge at 900–1023px and causes horizontal page scroll at 1024–1199px (scrollWidth up to
+   1161px). At 1200–1279px it runs into the 24px gutter. Only bleed when there is room. */
+@media (max-width:1279px){
+  .pst-body .post-fig--wide{margin-left:0;margin-right:0}
+}
+
+/* ---------------------------------------------------------------- MEDIUM */
+
+/* M1: Company hero h1 "Boss.Technology." (ES and EN) is 293px wide in a 280px box at 320px, so it
+   runs into the gutter and the section clips it. Use a slightly smaller size only below 360px. */
+@media (max-width:359px){
+  section.ch .ch-h{font-size:34px!important}
+}
+
+/* M2: Footer links (every page) are 36px tall, and the footer bee button is 16x24.
+   Expand the hit area to 44px with a transparent pseudo-element so the visual layout doesn't change. */
+footer a.inline-block.py-1\.5,footer a.py-2.underline{position:relative}
+footer a.inline-block.py-1\.5::after,footer a.py-2.underline::after{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
+footer .ft-bee::after{content:"";position:absolute;inset:-8px -12px}
+
+/* M3: Home sector switcher (Minería / Agroexportación / Retail) is 23px tall with 11px text on
+   mobile, and the floating card labels go down to 9–10px. The selectors are more specific than
+   the inline <style> in index.html. */
+@media (max-width:719px){
+  .mz-wrap .mz-sec button{min-height:40px;padding:8px 14px;font-size:12px}
+  .mz-wrap .mz-sec{padding:4px}
+  .mz-wrap .mz-card b{font-size:12px}
+  .mz-wrap .mz-card small{font-size:11px}
+  .mz-wrap .mz-lab{font-size:11px}
+}
+
+/* M4: Small text links have tiny hit areas: .ph-back is 14px tall (case pages), .pst-back is 18px
+   (blog posts), .cx-more is 15px (home) and .btn-link is 30px. Grow the hit area with a
+   transparent pseudo-element so the layout doesn't move (.ph-back keeps its 28px margin-bottom). */
+.ph-back,.pst-back,.cx-more,.btn-link{position:relative}
+.ph-back::after,.pst-back::after,.cx-more::after,.btn-link::after{content:"";position:absolute;left:-4px;right:-4px;top:50%;height:44px;transform:translateY(-50%)}
+
+/* M5: Company page LinkedIn icons are 30x30. */
+.team-li{width:40px;height:40px;border-radius:var(--radius-tile)}
+
+/* M6: Blog index cards (.blg-card h3: 20/600/1.25) don't match the same "blog article" card on
+   the home page and in the style guide (H3: 20 to 24 / 700 / 1.15). site.css sets 20px !important. */
+.blg-card h3{font-weight:700!important;line-height:1.15!important}
+@media (min-width:640px){.blg-card h3{font-size:22px!important}}
+@media (min-width:1024px){.blg-card h3{font-size:24px!important}}
+
+/* M7: The blog index h1 (36 to 56px) is the only hub page off the hero scale (40 to 64 / 600 / 1.05),
+   which .ph-h1 uses on 23 pages. Blog posts (.pst-h h1) are left as they are on purpose. */
+.blg-head h1{font-size:clamp(40px,5vw,64px);line-height:1.05}
+
+/* M8: Section rhythm. Every .bz-sec uses --sec-band (124px desktop, 84px mobile) top and bottom,
+   even with no background, so two plain sections on bo11y, ia-aplicada and plataformas sit
+   ~248px apart (168px mobile), while the guide and home/compania use 124/84. Only bands with a
+   background keep --sec-band. The second selector keeps the inline padding-top:0 sections on
+   ia-aplicada. CHECK VISUALLY before shipping. */
+main .bz-sec:not(.bz-dark):not(.bz-sec--dk):not(#ejemplo){padding-bottom:var(--sec-pad)}
+main .bz-sec:not(.bz-dark):not(.bz-sec--dk):not(#ejemplo):not([style*="padding-top:0"]){padding-top:var(--sec-pad)}
+
+/* M9: Panel radii outside the system. Cards and panels are 20px (--radius-xl), but bo11y bands
+   (#ejemplo, #ia) use 40px (28px mobile), .bo-bx3 uses 32px (24px mobile), the contact and
+   careers .ct-bee uses 24px, and blog figures use 18px. */
+/* Full-width bands (#ejemplo, #ia) keep 40px on purpose: it matches the page heroes and other bands. */
+.bo-bx3,.ct-bee,.post-fig img{border-radius:var(--radius-xl)!important}
+
+/* M10: The Engines page (productos/aplicaciones) caps its main section at 1152px with a 20px gutter
+   (inline style), while every other page uses --container-max (1400px content + 24px gutter).
+   So the grid and headings don't line up with the header and footer on desktop. */
+main section.eg{max-width:var(--container-max)!important;padding-left:20px!important;padding-right:20px!important}
+@media (min-width:1024px){main section.eg{padding-left:24px!important;padding-right:24px!important}}
+
+/* M11: nav.css starts a second status palette (--status-*-ink, -soft) and redefines the status
+   tokens from tokens.css. Point the duplicate "ink" aliases back to the DS tokens (the color
+   change is tiny: #b91c1c to #c02b2b, #15803d to #17803f, #a16207 to #a86b00) and swap the
+   hard-coded #b91c1c in bo11y.css. Decide which base values are canonical and regenerate
+   tokens.css; this rule is only a stopgap. */
+:root{--status-ok-ink:var(--status-ok-fg);--status-bad-ink:var(--status-bad-fg);--status-warn-ink:var(--status-warn-fg)}
+.bo-tun.dark .bo-steps li:last-child span{color:var(--status-bad-fg)!important}
+
+/* M12: Small text in the case-study infographics (real content labels, not decoration) is
+   10.5–11.5px. The DS caption floor is 12px (--caption-size). */
+.cs-fr small,.cs-mrow.hd span,.cs-dec em,.cs-hub-c small,.cs-res small,.cs-wo-t em,.cs-mrow small,.cs-pct span,.bb-env small,.eg-grid small{font-size:var(--caption-size)!important}
+/* At 12px the nowrap work-order labels (caso-4) no longer fit a 320px screen: let them wrap there. */
+@media (max-width:374px){.cs-wo-t em{white-space:normal}}
+
+/* ------------------------------------------------------------------- LOW */
+
+/* L1: Eyebrow variants. The standard is 13 / 600 / +0.12em (31 pages). .bz-kicker uses 0.14em;
+   .vr-eb (home, Engines page) uses 12px / 0.14em. */
+.bz-kicker{letter-spacing:.12em}
+.vr-eb{font-size:13px;letter-spacing:.12em}
+
+/* L2: Pure black instead of --brand-ink: home and style-guide blog card titles (.text-black),
+   the BzzzBX product card (#010302) and the plataformas hero (#010101). */
+.text-black{color:var(--brand-ink)}
+.pd-card.pd-bx{background-color:var(--brand-ink)}
+section.bz-hero--rack{background-color:var(--brand-ink)}
+
+/* L3: Legal page h2 inherits line-height 1.5 (33px on 22px). Every other heading uses 1.1–1.25. */
+.legal-col h2{line-height:1.25}
+
+/* L4: Long-form h3 differs between case studies (17px / 1.2) and blog posts (20px / 1.3).
+   Align case studies with the site-wide h3 (20 / 600 / 1.25). */
+.cs-fr h3{font-size:20px;line-height:1.25}
+
+/* L5: On hover, outline buttons fill with accent but keep their faint ink or white border
+   (CTA band secondary and bo11y hero secondary). */
+section.sec-cta .mt-7 a.cta-2:hover,.bz-btn.bo-btn-l:hover{border-color:var(--brand-accent)!important}
+
+/* L6: The home "See all cases" link puts the arrow before the text. Everywhere else
+   (.btn-link, guide) the arrow comes after. */
+.cx-more{flex-direction:row-reverse}
+
+/* L7: In-page anchors (#ejemplo on bo11y, #factores on home, guide sections) have no
+   scroll-margin, so the fixed header (70–76px) covers the target. */
+html{scroll-padding-top:calc(var(--header-height) + 8px)}
+
+/* L8: The mobile blog post gutter is 24px; every other page uses 20px below 1024px. */
+@media (max-width:1023px){.pst-h,.pst-g{padding-left:20px;padding-right:20px}}
+
+/* L9: The plataformas dashboard mockup squeezes the log message to about 5 characters at
+   320–360px. Hide the timestamp column on narrow screens so the message can show. */
+@media (max-width:400px){.hv-lg .lg-r time{display:none}}
+
+/* Contrast (Lighthouse): footer copyright on ink is 4.43:1 and the strikethrough list in the
+   "Black boxes" post is 3.8:1; WCAG AA asks 4.5:1. */
+footer p.text-white\/45{color:rgba(255,255,255,.58)}
+.bb-sh s{color:#646482}
+/* Contrast (Lighthouse), WCAG AA 4.5:1:
+   - bo11y "No data" step labels: #8080a0 on #e9e8f4 is 3.1:1
+   - case study sidebar labels (INDUSTRIA, ENFOQUE…): #87868e on #f1f0f5 is 3.2:1
+   - caso-4 "Ve:" in the silo cards: #17803f on #f1f0f5 is 4.4:1 */
+.bo-tun.dark .bo-steps li.mid .bo-off{color:#5f5f7a!important}
+article dl.space-y-5 dt.text-body-xs{color:color-mix(in srgb,var(--brand-ink) 62%,transparent)}
+.cs-silo .y i{color:#136b34}
+/* - caso-4 machine table header and hub captions on dark: 45% / 70% white tints are 4.49:1 / 3.7:1 */
+.cs-mrow.hd{color:color-mix(in srgb,var(--brand-paper-2) 62%,transparent)}
+.cs-hub-c small{color:color-mix(in srgb,var(--brand-paper-2) 88%,transparent)}

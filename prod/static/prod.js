@@ -105,6 +105,14 @@
   function setupForm(f) {
     if (f.getAttribute("data-pc")) return;
     f.setAttribute("data-pc", "1");
+    // Labels in the artifact's forms aren't tied to their fields (no for/id): screen readers can't name them.
+    Array.prototype.forEach.call(f.querySelectorAll("label:not([for])"), function (l, i) {
+      var el = l.nextElementSibling;
+      if (!el || !/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) el = l.parentNode.querySelector("input,select,textarea");
+      if (!el) return;
+      if (!el.id) el.id = "pc-f-" + (el.name || i);
+      l.htmlFor = el.id;
+    });
     var hp = document.createElement("input"); // anti-spam trap, invisible to people
     hp.type = "text"; hp.name = "website"; hp.tabIndex = -1; hp.autocomplete = "off";
     hp.setAttribute("aria-hidden", "true"); hp.className = "pc-hp";
@@ -149,7 +157,25 @@
       .then(function () { if (btn) btn.disabled = false; });
   }, true);
 
+  /* ===================== 3. Mobile menu accessibility ===================== */
+  // The artifact's menu opens a panel on click; Escape didn't close it and the button didn't say what it controls.
+  function menuA11y() {
+    var btn = document.querySelector('header.fixed button[aria-label="Menu"]');
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      setTimeout(function () {
+        var panel = btn.closest("header").querySelector(":scope > div:not(:first-child)");
+        if (panel) { panel.id = panel.id || "pc-mobile-menu"; btn.setAttribute("aria-controls", panel.id); }
+        else btn.removeAttribute("aria-controls");
+      }, 0);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && btn.getAttribute("aria-expanded") === "true") { btn.click(); btn.focus(); }
+    });
+  }
+
   function init() {
+    menuA11y();
     footerLink();
     Array.prototype.forEach.call(document.querySelectorAll("main form"), setupForm);
   }
