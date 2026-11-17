@@ -17,6 +17,7 @@ const FIELDS = {
   lastName: { es: "Apellido", max: 120 },
   email: { es: "Correo", max: 200 },
   company: { es: "Empresa", max: 200 },
+  country: { es: "País", max: 60 },
   linkedin: { es: "LinkedIn / portafolio", max: 300 },
   area: { es: "Área de interés", max: 120 },
   message: { es: "Mensaje", max: 5000 },
@@ -105,7 +106,7 @@ export async function POST(req) {
       personalizations: [{ to }],
       from,
       reply_to: { email: data.email, name: name || undefined },
-      subject: `[${kind}] ${name}${data.company ? ` · ${data.company}` : ""}${data.area ? ` · ${data.area}` : ""}`,
+      subject: `[${kind}] ${name}${data.company ? ` · ${data.company}` : ""}${data.country ? ` · ${data.country}` : ""}${data.area ? ` · ${data.area}` : ""}`,
       content: [
         { type: "text/plain", value: filled.map(([k, f]) => `${f.es}: ${data[k]}`).join("\n") + `\n\nIdioma: ${en ? "en" : "es"} · Página: ${page}` },
         { type: "text/html", value: layout(`Nuevo mensaje · ${kind}`, `<table style="font-size:14px;line-height:1.5">${rows}</table><p style="margin:20px 0 0;font-size:12px;color:#7a7a8c">Idioma: ${en ? "en" : "es"} · Página: ${esc(page)}<br>Responde a este correo para escribirle directamente.</p>`) },

@@ -84,8 +84,8 @@
 
   /* ===================== 2. Forms ===================== */
   var M = EN
-    ? { required: "Please fill in your name, a valid email and a message.", sending: "Sending…", ok: "Bzzz. Thanks! We received your message and will get back to you soon. We also sent you a confirmation email.", fail: "We couldn't send your message. Please try again or write to admin@boss.technology." }
-    : { required: "Completa tu nombre, un correo válido y un mensaje.", sending: "Enviando…", ok: "Bzzz. ¡Gracias! Recibimos tu mensaje y te responderemos pronto. Te enviamos un correo de confirmación.", fail: "No pudimos enviar tu mensaje. Inténtalo de nuevo o escríbenos a admin@boss.technology." };
+    ? { required: "Please fill in your name, a valid email and a message.", requiredCountry: "Please fill in your name, a valid email, your country and a message.", sending: "Sending…", ok: "Bzzz. Thanks! We received your message and will get back to you soon. We also sent you a confirmation email.", fail: "We couldn't send your message. Please try again or write to admin@boss.technology." }
+    : { required: "Completa tu nombre, un correo válido y un mensaje.", requiredCountry: "Completa tu nombre, un correo válido, tu país y un mensaje.", sending: "Enviando…", ok: "Bzzz. ¡Gracias! Recibimos tu mensaje y te responderemos pronto. Te enviamos un correo de confirmación.", fail: "No pudimos enviar tu mensaje. Inténtalo de nuevo o escríbenos a admin@boss.technology." };
   var loadedAt = Date.now();
 
   function note(f, text, bad) {
@@ -129,13 +129,13 @@
     var data = {};
     Array.prototype.forEach.call(f.elements, function (el) { if (el.name) data[el.name] = (el.value || "").trim(); });
     var bad = false;
-    [["firstName", !data.firstName], ["email", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || "")], ["message", !data.message]].forEach(function (r) {
+    [["firstName", !data.firstName], ["email", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || "")], ["country", f.elements.country && !data.country], ["message", !data.message]].forEach(function (r) {
       var el = f.elements[r[0]]; if (!el) return;
       el.setAttribute("aria-invalid", r[1] ? "true" : "false");
       if (r[1]) bad = true;
     });
     if (bad) {
-      note(f, M.required, true);
+      note(f, f.elements.country ? M.requiredCountry : M.required, true);
       var first = f.querySelector('[aria-invalid="true"]'); if (first) first.focus();
       return;
     }
@@ -174,7 +174,32 @@
     });
   }
 
+  /* Country selector in the "Book a meeting" form. Values are always in Spanish for the team. */
+  var COUNTRIES = [["Estados Unidos", "United States"], ["Perú", "Peru"], ["Colombia", "Colombia"], ["Latam (otros)", "Other Latin American country"], ["Europa", "Europe"]];
+  function countryField() {
+    if (!/\/contacto\.html$/.test(location.pathname)) return;
+    var f = document.querySelector("main form");
+    var company = f && f.querySelector('[name="company"]');
+    if (!company || f.querySelector('[name="country"]')) return;
+    var ref = company.parentNode, lab = ref.querySelector("label");
+    var wrap = document.createElement("div");
+    var label = document.createElement("label");
+    label.className = lab ? lab.className : "";
+    label.textContent = EN ? "Country" : "País";
+    var select = document.createElement("select");
+    select.name = "country";
+    select.className = (company.className || "") + " ct-sel";
+    select.setAttribute("aria-invalid", "false");
+    var ph = new Option(EN ? "Select your country" : "Selecciona tu país", "", true, true);
+    ph.disabled = true;
+    select.add(ph);
+    COUNTRIES.forEach(function (c) { select.add(new Option(EN ? c[1] : c[0], c[0])); });
+    wrap.appendChild(label); wrap.appendChild(select);
+    ref.parentNode.insertBefore(wrap, ref.nextSibling);
+  }
+
   function init() {
+    countryField();
     menuA11y();
     footerLink();
     Array.prototype.forEach.call(document.querySelectorAll("main form"), setupForm);

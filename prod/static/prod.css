@@ -184,3 +184,7 @@ article dl.space-y-5 dt.text-body-xs{color:color-mix(in srgb,var(--brand-ink) 62
 /* - caso-4 machine table header and hub captions on dark: 45% / 70% white tints are 4.49:1 / 3.7:1 */
 .cs-mrow.hd{color:color-mix(in srgb,var(--brand-paper-2) 62%,transparent)}
 .cs-hub-c small{color:color-mix(in srgb,var(--brand-paper-2) 88%,transparent)}
+/* Selects with nothing chosen yet (country in Contact, area in Careers) look like the other empty
+   fields' placeholders instead of filled-in text. */
+select.ct-sel:has(option[value=""]:checked){color:color-mix(in srgb,var(--brand-ink) 35%,transparent)}
+select.ct-sel option{color:var(--brand-ink)}
