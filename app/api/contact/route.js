@@ -82,6 +82,9 @@ export async function POST(req) {
     data[k] = typeof body[k] === "string" ? body[k].trim().slice(0, f.max) : "";
   }
   if (!data.firstName || !data.message || !EMAIL_RE.test(data.email)) return json({ error: "missing_fields" }, 400);
+  // Explicit consent to the privacy policy and terms (checkbox in the form) is required.
+  if (body.consent !== true) return json({ error: "consent_required" }, 400);
+  const consentAt = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
 
   const { SENDGRID_API_KEY, CONTACT_FROM } = process.env;
   if (!SENDGRID_API_KEY || !CONTACT_FROM) {
@@ -108,8 +111,8 @@ export async function POST(req) {
       reply_to: { email: data.email, name: name || undefined },
       subject: `[${kind}] ${name}${data.company ? ` · ${data.company}` : ""}${data.country ? ` · ${data.country}` : ""}${data.area ? ` · ${data.area}` : ""}`,
       content: [
-        { type: "text/plain", value: filled.map(([k, f]) => `${f.es}: ${data[k]}`).join("\n") + `\n\nIdioma: ${en ? "en" : "es"} · Página: ${page}` },
-        { type: "text/html", value: layout(`Nuevo mensaje · ${kind}`, `<table style="font-size:14px;line-height:1.5">${rows}</table><p style="margin:20px 0 0;font-size:12px;color:#7a7a8c">Idioma: ${en ? "en" : "es"} · Página: ${esc(page)}<br>Responde a este correo para escribirle directamente.</p>`) },
+        { type: "text/plain", value: filled.map(([k, f]) => `${f.es}: ${data[k]}`).join("\n") + `\n\nAceptó la Política de privacidad y los Términos de servicio: sí (${consentAt})\nIdioma: ${en ? "en" : "es"} · Página: ${page}` },
+        { type: "text/html", value: layout(`Nuevo mensaje · ${kind}`, `<table style="font-size:14px;line-height:1.5">${rows}</table><p style="margin:20px 0 0;font-size:12px;color:#7a7a8c">Aceptó la Política de privacidad y los Términos de servicio: sí (${consentAt})<br>Idioma: ${en ? "en" : "es"} · Página: ${esc(page)}<br>Responde a este correo para escribirle directamente.</p>`) },
       ],
       categories: ["web-form", careers ? "careers" : "contact"],
     });

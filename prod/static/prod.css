@@ -13,8 +13,9 @@
 .pc-banner p{margin:0;color:rgba(255,255,255,.82)}
 .pc-banner a{color:#fff;text-decoration:underline;text-underline-offset:3px}
 .pc-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
-.pc-btn{appearance:none;border:0;cursor:pointer;min-height:42px;padding:0 22px;border-radius:999px;
-  font:500 14px/1 var(--font-family-display,var(--font-inter)),ui-sans-serif,system-ui,sans-serif;transition:background-color .2s,color .2s}
+/* Same as the site's small button: 44px, 15/500 Host Grotesk, pill, hover to a darker accent / white border. */
+.pc-btn{appearance:none;border:0;cursor:pointer;min-height:44px;padding:0 22px;border-radius:999px;
+  font:500 15px/1 var(--font-family-display,var(--font-inter)),ui-sans-serif,system-ui,sans-serif;transition:background-color .2s,color .2s,box-shadow .2s}
 .pc-ok{background:var(--brand-accent,#4e49f2);color:#fff}
 .pc-ok:hover{background:#3f3ad9}
 .pc-no{background:transparent;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
@@ -188,3 +189,31 @@ article dl.space-y-5 dt.text-body-xs{color:color-mix(in srgb,var(--brand-ink) 62
    fields' placeholders instead of filled-in text. */
 select.ct-sel:has(option[value=""]:checked){color:color-mix(in srgb,var(--brand-ink) 35%,transparent)}
 select.ct-sel option{color:var(--brand-ink)}
+
+/* BzzzBX hero (productos/plataformas) on phones and tablets: the text sat on top of the server
+   photo and was hard to read. Below 1024px: text first on black, then the photo as its own block
+   that fades in from the black with a vertical gradient. Desktop keeps the side-by-side layout.
+   (Request 2026-11-18; the source rules in bzzzbx.css use !important, hence the specificity.) */
+@media (max-width:1023px){
+  main section.bz-hero.bz-hero--rack{display:flex!important;flex-direction:column;min-height:0!important;
+    padding:112px 0 0!important;background:var(--brand-ink)!important}
+  main section.bz-hero--rack>.bz-in{order:1}
+  main section.bz-hero--rack>.bz-hero-bg{order:2;position:relative!important;inset:auto!important;width:100%!important;
+    height:clamp(300px,100vw,520px);margin:8px 0 0!important}
+  main section.bz-hero--rack .bz-hero-bg img{opacity:1!important;object-position:80% 58%!important}
+  main section.bz-hero--rack .bz-hero-bg::after{background:linear-gradient(to bottom,var(--brand-ink) 0%,
+    color-mix(in srgb,var(--brand-ink) 70%,transparent) 22%,transparent 55%)!important}
+}
+
+/* Consent checkbox in the forms */
+.pc-consent{display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:1.5;color:color-mix(in srgb,var(--brand-ink) 72%,transparent);cursor:pointer}
+.pc-consent input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:var(--brand-accent,#4e49f2);cursor:pointer}
+.pc-consent input[aria-invalid="true"]{outline:2px solid #d93036;outline-offset:2px}
+.pc-consent a{color:var(--brand-ink);text-decoration:underline;text-underline-offset:3px}
+.pc-consent a:hover{color:var(--brand-accent,#4e49f2)}
+
+/* Mobile menu (request 2026-11-18): no accent stroke on the left of the current item (keep the tinted background). */
+header.fixed :is([class~="bg-ink/95"]) a[aria-current="page"]{box-shadow:none}
+/* Mobile menu, light bar: the generic "a:hover → light tint" rule also hit the accent "Contactar"
+   button, leaving white text on light grey. Keep the button's own hover. */
+header.fixed[data-bar="light"] :is([class~="bg-ink-2/95"],[class~="bg-ink/95"]) a.bg-accent-base:hover{background-color:#3f3ad9;color:var(--on-accent,#fff)}

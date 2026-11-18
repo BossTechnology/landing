@@ -84,8 +84,8 @@
 
   /* ===================== 2. Forms ===================== */
   var M = EN
-    ? { required: "Please fill in your name, a valid email and a message.", requiredCountry: "Please fill in your name, a valid email, your country and a message.", sending: "Sending…", ok: "Bzzz. Thanks! We received your message and will get back to you soon. We also sent you a confirmation email.", fail: "We couldn't send your message. Please try again or write to admin@boss.technology." }
-    : { required: "Completa tu nombre, un correo válido y un mensaje.", requiredCountry: "Completa tu nombre, un correo válido, tu país y un mensaje.", sending: "Enviando…", ok: "Bzzz. ¡Gracias! Recibimos tu mensaje y te responderemos pronto. Te enviamos un correo de confirmación.", fail: "No pudimos enviar tu mensaje. Inténtalo de nuevo o escríbenos a admin@boss.technology." };
+    ? { required: "Please fill in your name, a valid email and a message.", requiredCountry: "Please fill in your name, a valid email, your country and a message.", consent: "To send the form, please accept the Privacy Policy and the Terms of Service.", sending: "Sending…", ok: "Bzzz. Thanks! We received your message and will get back to you soon. We also sent you a confirmation email.", fail: "We couldn't send your message. Please try again or write to admin@boss.technology." }
+    : { required: "Completa tu nombre, un correo válido y un mensaje.", requiredCountry: "Completa tu nombre, un correo válido, tu país y un mensaje.", consent: "Para enviar el formulario, acepta la Política de privacidad y los Términos de servicio.", sending: "Enviando…", ok: "Bzzz. ¡Gracias! Recibimos tu mensaje y te responderemos pronto. Te enviamos un correo de confirmación.", fail: "No pudimos enviar tu mensaje. Inténtalo de nuevo o escríbenos a admin@boss.technology." };
   var loadedAt = Date.now();
 
   function note(f, text, bad) {
@@ -107,6 +107,7 @@
     f.setAttribute("data-pc", "1");
     // Labels in the artifact's forms aren't tied to their fields (no for/id): screen readers can't name them.
     Array.prototype.forEach.call(f.querySelectorAll("label:not([for])"), function (l, i) {
+      if (l.querySelector("input,select,textarea")) return; // wraps its own control
       var el = l.nextElementSibling;
       if (!el || !/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) el = l.parentNode.querySelector("input,select,textarea");
       if (!el) return;
@@ -127,13 +128,24 @@
     e.stopPropagation();
     setupForm(f);
     var data = {};
-    Array.prototype.forEach.call(f.elements, function (el) { if (el.name) data[el.name] = (el.value || "").trim(); });
+    Array.prototype.forEach.call(f.elements, function (el) {
+      if (!el.name) return;
+      data[el.name] = el.type === "checkbox" ? el.checked : (el.value || "").trim();
+    });
     var bad = false;
     [["firstName", !data.firstName], ["email", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || "")], ["country", f.elements.country && !data.country], ["message", !data.message]].forEach(function (r) {
       var el = f.elements[r[0]]; if (!el) return;
       el.setAttribute("aria-invalid", r[1] ? "true" : "false");
       if (r[1]) bad = true;
     });
+    var consent = f.elements.consent;
+    if (!bad && consent && !consent.checked) {
+      consent.setAttribute("aria-invalid", "true");
+      note(f, M.consent, true);
+      consent.focus();
+      return;
+    }
+    if (consent) consent.setAttribute("aria-invalid", "false");
     if (bad) {
       note(f, f.elements.country ? M.requiredCountry : M.required, true);
       var first = f.querySelector('[aria-invalid="true"]'); if (first) first.focus();
@@ -164,8 +176,14 @@
     if (!btn) return;
     btn.addEventListener("click", function () {
       setTimeout(function () {
-        var panel = btn.closest("header").querySelector(":scope > div:not(:first-child)");
-        if (panel) { panel.id = panel.id || "pc-mobile-menu"; btn.setAttribute("aria-controls", panel.id); }
+        var header = btn.closest("header");
+        var panel = header.querySelector(":scope > div:not(:first-child)");
+        if (panel) {
+          panel.id = panel.id || "pc-mobile-menu"; btn.setAttribute("aria-controls", panel.id);
+          // The artifact's menu panel links ES/EN to the wrong page: use the desktop nav's switch, which is right.
+          var own = panel.querySelector("nav p"), good = header.querySelector("nav.hidden > p");
+          if (own && good && !own.hasAttribute("data-pc")) { var c = good.cloneNode(true); c.setAttribute("data-pc", "1"); own.replaceWith(c); }
+        }
         else btn.removeAttribute("aria-controls");
       }, 0);
     });
@@ -198,8 +216,27 @@
     ref.parentNode.insertBefore(wrap, ref.nextSibling);
   }
 
+  /* Consent checkbox (privacy policy + terms) before the submit button, unchecked by default. */
+  function consentField(f) {
+    if (f.querySelector('[name="consent"]')) return;
+    var btn = f.querySelector('button[type="submit"]');
+    if (!btn) return;
+    var root = "/" + (EN ? "en" : "es") + "/legal/";
+    var label = document.createElement("label");
+    label.className = "pc-consent";
+    var box = document.createElement("input");
+    box.type = "checkbox"; box.name = "consent"; box.value = "yes"; box.setAttribute("aria-invalid", "false");
+    var txt = document.createElement("span");
+    txt.innerHTML = EN
+      ? 'I have read and accept the <a href="' + root + 'privacidad.html" target="_blank" rel="noopener">Privacy Policy</a> and the <a href="' + root + 'terminos.html" target="_blank" rel="noopener">Terms of Service</a>.'
+      : 'He leído y acepto la <a href="' + root + 'privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> y los <a href="' + root + 'terminos.html" target="_blank" rel="noopener">Términos de servicio</a>.';
+    label.appendChild(box); label.appendChild(txt);
+    btn.parentNode.insertBefore(label, btn);
+  }
+
   function init() {
     countryField();
+    Array.prototype.forEach.call(document.querySelectorAll("main form"), consentField);
     menuA11y();
     footerLink();
     Array.prototype.forEach.call(document.querySelectorAll("main form"), setupForm);
