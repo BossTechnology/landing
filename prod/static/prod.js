@@ -7,7 +7,7 @@
   var EN = (document.documentElement.lang || "").slice(0, 2) === "en" || /^\/en\//.test(location.pathname);
   var me = document.currentScript || document.querySelector('script[src$="/prod/prod.js"]');
   var GA_ID = me && me.getAttribute("data-ga");
-  var privacy = "/" + (EN ? "en" : "es") + "/legal/privacidad.html";
+  var privacy = "/" + (EN ? "en" : "es") + "/legal/privacidad";
 
   /* ===================== 1. Consent + GA4 ===================== */
   var KEY = "boss-consent-v1";
@@ -195,7 +195,7 @@
   /* Country selector in the "Book a meeting" form. Values are always in Spanish for the team. */
   var COUNTRIES = [["Estados Unidos", "United States"], ["Perú", "Peru"], ["Colombia", "Colombia"], ["Latam (otros)", "Other Latin American country"], ["Europa", "Europe"]];
   function countryField() {
-    if (!/\/contacto\.html$/.test(location.pathname)) return;
+    if (!/\/contacto(\.html)?$/.test(location.pathname)) return;
     var f = document.querySelector("main form");
     var company = f && f.querySelector('[name="company"]');
     if (!company || f.querySelector('[name="country"]')) return;
@@ -228,13 +228,38 @@
     box.type = "checkbox"; box.name = "consent"; box.value = "yes"; box.setAttribute("aria-invalid", "false");
     var txt = document.createElement("span");
     txt.innerHTML = EN
-      ? 'I have read and accept the <a href="' + root + 'privacidad.html" target="_blank" rel="noopener">Privacy Policy</a> and the <a href="' + root + 'terminos.html" target="_blank" rel="noopener">Terms of Service</a>.'
-      : 'He leído y acepto la <a href="' + root + 'privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> y los <a href="' + root + 'terminos.html" target="_blank" rel="noopener">Términos de servicio</a>.';
+      ? 'I have read and accept the <a href="' + root + 'privacidad" target="_blank" rel="noopener">Privacy Policy</a> and the <a href="' + root + 'terminos" target="_blank" rel="noopener">Terms of Service</a>.'
+      : 'He leído y acepto la <a href="' + root + 'privacidad" target="_blank" rel="noopener">Política de privacidad</a> y los <a href="' + root + 'terminos" target="_blank" rel="noopener">Términos de servicio</a>.';
     label.appendChild(box); label.appendChild(txt);
     btn.parentNode.insertBefore(label, btn);
   }
 
+  /* Current section in the menu. The artifact's site.js only recognises ".html" URLs; with clean URLs
+     (proxy.js) it marks nothing, so do it here for both forms. */
+  function markCurrent() {
+    var key = function (p) {
+      p = (p || "").toLowerCase().replace(/\.html$/, "");
+      if (/\/casos(\/|$)/.test(p)) return "casos";
+      if (/productos\/aplicaciones$/.test(p)) return "engines";
+      var m = p.match(/(plataformas|ia-aplicada|bo11y|compania)$/);
+      return m ? m[1] : "";
+    };
+    var cur = key(location.pathname), header = document.querySelector("header.fixed");
+    if (!cur || !header) return;
+    var mark = function (root) {
+      Array.prototype.forEach.call(root.querySelectorAll("a[href]"), function (a) {
+        if (a.closest("[id^='_R_']") || a.closest("p") || a.hasAttribute("aria-current")) return;
+        if (key(a.pathname) === cur) a.setAttribute("aria-current", "page");
+      });
+    };
+    mark(header);
+    new MutationObserver(function (ms) {
+      ms.forEach(function (m) { Array.prototype.forEach.call(m.addedNodes, function (n) { if (n.nodeType === 1) mark(n); }); });
+    }).observe(header, { childList: true, subtree: true });
+  }
+
   function init() {
+    markCurrent();
     countryField();
     Array.prototype.forEach.call(document.querySelectorAll("main form"), consentField);
     menuA11y();

@@ -11,7 +11,6 @@ const nextConfig = {
   async redirects() {
     // las páginas usan rutas relativas: /en y /es deben llevar a su index real
     return [
-      { source: "/en", destination: "/en/index.html", permanent: false },
       { source: "/es", destination: "/", permanent: false },
     ];
   },

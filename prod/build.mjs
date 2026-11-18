@@ -38,7 +38,8 @@ const htmlFiles = [];
   }
 })("");
 
-const urlOf = (file) => (file === "index.html" ? "/" : "/" + file);
+// Clean URLs (served by proxy.js): "index.html" → "/", "en/index.html" → "/en", "es/compania.html" → "/es/compania"
+const urlOf = (file) => (file === "index.html" || file === "es/index.html" ? "/" : "/" + file.replace(/(\/index)?\.html$/, ""));
 const abs = (file) => SITE_URL + urlOf(file);
 const langOf = (file) => (file.startsWith("en/") ? "en" : "es");
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
@@ -53,6 +54,10 @@ const pages = htmlFiles.filter((f) => !INTERNAL.includes(f));
 
 /* ---------- 2. read pages, fix broken relative paths, find language alternates ---------- */
 const docs = {};
+if (readFileSync(path.join(OUT, "index.html"), "utf8").includes("<!-- prod -->")) {
+  console.error("prod: public/ was already processed — run scripts/copy-site.mjs first");
+  process.exit(1);
+}
 for (const file of pages) {
   let html = readFileSync(path.join(OUT, file), "utf8");
   // Relative asset paths that don't exist from this page but do from the site root
@@ -119,8 +124,26 @@ for (const file of pages) {
   }
   tags.push(`<link rel="stylesheet" href="/prod/prod.css"/>`);
   tags.push(`<script defer src="/prod/prod.js"${GA_ID ? ` data-ga="${GA_ID}"` : ""}></script>`);
+  // Internal page links → absolute clean URLs. Also matches the escaped hrefs inside the menu HTML
+  // that the artifact keeps as a JSON string in window.BOSS.
+  html = html.replace(/href=(\\?")([^"\\]+?\.html)(#[^"\\]*)?\1/g, (m, q, val, hash) => {
+    if (/^(https?:|\/\/|mailto:|tel:)/.test(val)) return m;
+    const target = val.startsWith("/") ? val.slice(1) : resolve(file, val);
+    if (!existsSync(path.join(OUT, target)) && !INTERNAL.includes(target)) return m;
+    return `href=${q}${INTERNAL.includes(target) ? "/" : urlOf(target)}${hash || ""}${q}`;
+  });
   html = html.replace(/<\/head>/, `<!-- prod -->${tags.join("")}<!-- /prod --></head>`);
   writeFileSync(path.join(OUT, file), html);
+}
+
+/* ---------- 3b. next.config.mjs (from the artifact) ---------- */
+// It redirects "/en" to "/en/index.html". Config redirects run before proxy.js, so together with the
+// ".html → clean URL" redirect it would loop. The artifact sync brings the rule back, so remove it on every build.
+{
+  const cfgFile = "next.config.mjs";
+  const cfg = readFileSync(cfgFile, "utf8");
+  const rule = /^[ \t]*\{\s*source:\s*["']\/en["'],\s*destination:\s*["']\/en\/index\.html["'][^}]*\},?[ \t]*\r?\n/m;
+  if (rule.test(cfg)) { writeFileSync(cfgFile, cfg.replace(rule, "")); log.push("next.config.mjs: removed the /en → /en/index.html redirect (clean URLs)"); }
 }
 
 /* ---------- 4. sitemap.xml and robots.txt ---------- */

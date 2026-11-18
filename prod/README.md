@@ -12,9 +12,21 @@ Todo lo necesario para producción vive fuera de esos archivos y se aplica al co
 | `prod/static/og-*.jpg` | Imágenes para compartir en redes (1200×630). |
 | `app/api/contact/route.js` | Envía los formularios por Resend: aviso al equipo y confirmación a la persona en su idioma. |
 | `vercel.json` | Comando de compilación con la capa de producción, cabeceras de seguridad y redirecciones. |
+| `proxy.js` | URLs limpias: sirve `/es/compania` desde `compania.html`, `/en` desde `en/index.html`, y redirige (308) cualquier `*.html` a su URL limpia. |
 
 `vercel.json` es lo que garantiza que la capa se aplique en Vercel: aunque una sincronización sobrescriba
 `package.json`, el comando de compilación de `vercel.json` sigue ejecutando `prod/build.mjs`.
+
+## URLs limpias
+
+Las páginas se publican sin `.html` (`/es/compania`, `/en/casos/caso-4`, `/en`). `prod/build.mjs` reescribe a esas URLs
+todos los enlaces internos (incluidos los del menú móvil que el artefacto guarda en `window.BOSS`), el canonical, el
+`hreflang` y el sitemap, y `proxy.js` las sirve. Las direcciones antiguas con `.html` redirigen con 308, así que los
+enlaces ya compartidos siguen funcionando.
+
+`next.config.mjs` (del artefacto) redirige `/en` a `/en/index.html`. Como las redirecciones de `next.config` se
+ejecutan antes que `proxy.js`, esa regla haría un bucle con las URLs limpias: `prod/build.mjs` la retira en cada
+compilación (la sincronización la vuelve a traer). Lo ideal es quitarla también en el artefacto.
 
 ## Variables de entorno (Vercel → Project → Settings → Environment Variables)
 
