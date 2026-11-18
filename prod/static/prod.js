@@ -223,10 +223,9 @@
   var SOURCES = [
     ["Partner", "Me lo recomendó un partner", "A partner referred me"],
     ["Recomendación", "Me lo recomendó una persona", "Someone recommended you"],
-    ["LinkedIn", "LinkedIn", "LinkedIn"],
-    ["Redes sociales", "Otras redes sociales", "Other social media"],
-    ["Buscador", "Google u otro buscador", "Google or another search engine"],
-    ["Evento", "Evento o conferencia", "Event or conference"],
+    ["Redes sociales", "Redes sociales", "Social media"],
+    ["Buscador", "Buscador", "Search engine"],
+    ["Asistente de IA", "Asistente de IA", "AI assistant"],
     ["Otro", "Otro", "Other"]];
   var SOURCE_DETAIL = {
     "Partner": EN ? ["Which partner?", "Partner name"] : ["¿Qué partner?", "Nombre del partner"],
