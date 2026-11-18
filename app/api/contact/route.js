@@ -1,9 +1,9 @@
-// Contact and careers forms → email via SendGrid (https://sendgrid.com).
+// Contact and careers forms → email via Resend (https://resend.com).
 // Part of the production layer: this file is not produced by the artifact sync.
 //
 // Environment variables (Vercel → Project → Settings → Environment Variables):
-//   SENDGRID_API_KEY  (required)  API key with "Mail Send" permission
-//   CONTACT_FROM      (required)  verified sender in SendGrid, e.g. "Boss.Technology <web@boss.technology>"
+//   RESEND_API_KEY    (required)  API key with "Sending access" for boss.technology
+//   CONTACT_FROM      (optional)  sender on the domain verified in Resend; default "Boss.Technology <web@boss.technology>"
 //   CONTACT_TO        (optional)  team inbox, comma separated; default admin@boss.technology
 //   CONTACT_TO_CAREERS(optional)  inbox for the careers form; default CONTACT_TO
 //
@@ -30,11 +30,6 @@ const hits = new Map();
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const json = (body, status = 200) => Response.json(body, { status });
 
-function parseAddress(v) {
-  const m = String(v || "").match(/^\s*(?:"?([^"<]*)"?\s*)?<([^>]+)>\s*$/);
-  return m ? { email: m[2].trim(), name: (m[1] || "").trim() || undefined } : { email: String(v || "").trim() };
-}
-
 function limited(ip) {
   const now = Date.now();
   const list = (hits.get(ip) || []).filter((t) => now - t < RATE.windowMs);
@@ -45,13 +40,16 @@ function limited(ip) {
 }
 
 async function send(apiKey, msg) {
-  const r = await fetch("https://api.sendgrid.com/v3/mail/send", {
+  const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify(msg),
   });
-  if (!r.ok) throw new Error(`SendGrid ${r.status}: ${(await r.text()).slice(0, 500)}`);
+  if (!r.ok) throw new Error(`Resend ${r.status}: ${(await r.text()).slice(0, 500)}`);
 }
+
+// "Name <email>" for Resend; strips characters that would break the header
+const addr = (email, name) => (name ? `${name.replace(/[<>"\r\n]/g, "").trim()} <${email}>` : email);
 
 function layout(title, inner) {
   return `<!doctype html><html><body style="margin:0;background:#f3f2fb;padding:24px;font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;color:#050510">
@@ -86,17 +84,17 @@ export async function POST(req) {
   if (body.consent !== true) return json({ error: "consent_required" }, 400);
   const consentAt = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
 
-  const { SENDGRID_API_KEY, CONTACT_FROM } = process.env;
-  if (!SENDGRID_API_KEY || !CONTACT_FROM) {
-    console.error("contact: missing SENDGRID_API_KEY or CONTACT_FROM");
+  const { RESEND_API_KEY } = process.env;
+  if (!RESEND_API_KEY) {
+    console.error("contact: missing RESEND_API_KEY");
     return json({ error: "not_configured" }, 503);
   }
 
   const careers = body.form === "reclutamiento";
   const en = body.lang === "en";
-  const from = parseAddress(CONTACT_FROM);
+  const from = (process.env.CONTACT_FROM || "Boss.Technology <web@boss.technology>").trim();
   const teamTo = (careers && process.env.CONTACT_TO_CAREERS) || process.env.CONTACT_TO || "admin@boss.technology";
-  const to = teamTo.split(",").map((e) => ({ email: e.trim() })).filter((e) => e.email);
+  const to = teamTo.split(",").map((e) => e.trim()).filter(Boolean);
   const name = `${data.firstName} ${data.lastName}`.trim();
   const page = typeof body.page === "string" ? body.page.slice(0, 300) : "";
   const filled = Object.entries(FIELDS).filter(([k]) => data[k]);
@@ -105,16 +103,14 @@ export async function POST(req) {
   // 1. Team notification
   const rows = filled.map(([k, f]) => `<tr><td style="padding:6px 16px 6px 0;color:#7a7a8c;vertical-align:top;white-space:nowrap">${f.es}</td><td style="padding:6px 0;white-space:pre-wrap">${esc(data[k])}</td></tr>`).join("");
   try {
-    await send(SENDGRID_API_KEY, {
-      personalizations: [{ to }],
+    await send(RESEND_API_KEY, {
       from,
-      reply_to: { email: data.email, name: name || undefined },
+      to,
+      reply_to: addr(data.email, name),
       subject: `[${kind}] ${name}${data.company ? ` · ${data.company}` : ""}${data.country ? ` · ${data.country}` : ""}${data.area ? ` · ${data.area}` : ""}`,
-      content: [
-        { type: "text/plain", value: filled.map(([k, f]) => `${f.es}: ${data[k]}`).join("\n") + `\n\nAceptó la Política de privacidad y los Términos de servicio: sí (${consentAt})\nIdioma: ${en ? "en" : "es"} · Página: ${page}` },
-        { type: "text/html", value: layout(`Nuevo mensaje · ${kind}`, `<table style="font-size:14px;line-height:1.5">${rows}</table><p style="margin:20px 0 0;font-size:12px;color:#7a7a8c">Aceptó la Política de privacidad y los Términos de servicio: sí (${consentAt})<br>Idioma: ${en ? "en" : "es"} · Página: ${esc(page)}<br>Responde a este correo para escribirle directamente.</p>`) },
-      ],
-      categories: ["web-form", careers ? "careers" : "contact"],
+      text: filled.map(([k, f]) => `${f.es}: ${data[k]}`).join("\n") + `\n\nAceptó la Política de privacidad y los Términos de servicio: sí (${consentAt})\nIdioma: ${en ? "en" : "es"} · Página: ${page}`,
+      html: layout(`Nuevo mensaje · ${kind}`, `<table style="font-size:14px;line-height:1.5">${rows}</table><p style="margin:20px 0 0;font-size:12px;color:#7a7a8c">Aceptó la Política de privacidad y los Términos de servicio: sí (${consentAt})<br>Idioma: ${en ? "en" : "es"} · Página: ${esc(page)}<br>Responde a este correo para escribirle directamente.</p>`),
+      tags: [{ name: "form", value: careers ? "careers" : "contact" }],
     });
   } catch (err) {
     console.error("contact: team email failed", err);
@@ -140,16 +136,14 @@ export async function POST(req) {
         copy: "Tu mensaje",
       };
   try {
-    await send(SENDGRID_API_KEY, {
-      personalizations: [{ to: [{ email: data.email, name: name || undefined }] }],
+    await send(RESEND_API_KEY, {
       from,
-      reply_to: { email: to[0].email },
+      to: [addr(data.email, name)],
+      reply_to: to[0],
       subject: c.subject,
-      content: [
-        { type: "text/plain", value: `${c.title.replace(/&[^;]+;/g, "")}\n\n${c.body}\n\n${c.copy}:\n${data.message}\n\n— Boss.Technology` },
-        { type: "text/html", value: layout(c.title, `<p style="margin:0 0 16px;font-size:15px;line-height:1.6">${c.body}</p><p style="margin:0 0 6px;font-size:12px;color:#7a7a8c;text-transform:uppercase;letter-spacing:.08em">${c.copy}</p><blockquote style="margin:0;padding:12px 16px;background:#f7f6fd;border-radius:10px;font-size:14px;line-height:1.5;white-space:pre-wrap">${esc(data.message)}</blockquote>`) },
-      ],
-      categories: ["web-form-confirmation"],
+      text: `${c.title.replace(/&[^;]+;/g, "")}\n\n${c.body}\n\n${c.copy}:\n${data.message}\n\n— Boss.Technology`,
+      html: layout(c.title, `<p style="margin:0 0 16px;font-size:15px;line-height:1.6">${c.body}</p><p style="margin:0 0 6px;font-size:12px;color:#7a7a8c;text-transform:uppercase;letter-spacing:.08em">${c.copy}</p><blockquote style="margin:0;padding:12px 16px;background:#f7f6fd;border-radius:10px;font-size:14px;line-height:1.5;white-space:pre-wrap">${esc(data.message)}</blockquote>`),
+      tags: [{ name: "form", value: "confirmation" }],
     });
   } catch (err) {
     console.error("contact: confirmation email failed", err);
