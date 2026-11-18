@@ -218,3 +218,7 @@ header.fixed :is([class~="bg-ink/95"]) a[aria-current="page"]{box-shadow:none}
    button, leaving white text on light grey. Keep the button's own hover. */
 header.fixed[data-bar="light"] :is([class~="bg-ink-2/95"],[class~="bg-ink/95"]) a.bg-accent-base:hover{background-color:#3f3ad9;color:var(--on-accent,#fff)}
 .pc-source-detail[hidden]{display:none!important}
+
+/* Pinch Jobs case photo (prod/overrides/assets/brand/case-pinchjobs.jpg): the main person is on the right,
+   so frame towards her and the faces in every crop (tall card on the home page, wide strip on the case). */
+img[src*="case-pinchjobs"]{object-position:66% 32%!important}

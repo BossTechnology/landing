@@ -162,5 +162,18 @@ writeFileSync(path.join(OUT, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: 
 mkdirSync(path.join(OUT, "prod"), { recursive: true });
 cpSync("prod/static", path.join(OUT, "prod"), { recursive: true });
 
+/* ---------- 6. asset overrides ---------- */
+// Files in prod/overrides/ replace the artifact's file at the same path in public/
+// (e.g. a new case photo that the artifact still has the old version of).
+if (existsSync("prod/overrides")) {
+  cpSync("prod/overrides", OUT, { recursive: true });
+  (function list(dir) {
+    for (const f of readdirSync(dir)) {
+      const p = path.join(dir, f);
+      if (statSync(p).isDirectory()) list(p); else log.push(`override: ${path.relative("prod/overrides", p)}`);
+    }
+  })("prod/overrides");
+}
+
 for (const l of log) console.log("prod:", l);
 console.log(`prod: ${pages.length} pages ready for ${SITE_URL}${GA_ID ? ` · GA4 ${GA_ID}` : " · GA4 off (no GA_MEASUREMENT_ID)"}`);

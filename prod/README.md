@@ -12,6 +12,7 @@ Todo lo necesario para producción vive fuera de esos archivos y se aplica al co
 | `prod/static/og-*.jpg` | Imágenes para compartir en redes (1200×630). |
 | `app/api/contact/route.js` | Envía los formularios por Resend: aviso al equipo y confirmación a la persona en su idioma. |
 | `vercel.json` | Comando de compilación con la capa de producción, cabeceras de seguridad y redirecciones. |
+| `prod/overrides/` | Archivos que sustituyen al del artefacto en la misma ruta de `public/` al compilar (p. ej. `assets/brand/case-pinchjobs.jpg`, la foto nueva de Pinch Jobs). Cuando el artefacto tenga la versión nueva, se puede borrar de aquí. |
 | `proxy.js` | URLs limpias: sirve `/es/compania` desde `compania.html`, `/en` desde `en/index.html`, y redirige (308) cualquier `*.html` a su URL limpia. |
 
 `vercel.json` es lo que garantiza que la capa se aplique en Vercel: aunque una sincronización sobrescriba
