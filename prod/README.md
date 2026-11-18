@@ -10,7 +10,7 @@ Todo lo necesario para producción vive fuera de esos archivos y se aplica al co
 | `prod/static/prod.js` | Aviso de cookies + Google Analytics 4 (Consent Mode v2: GA solo se carga si la persona acepta) y envío real de los formularios a `/api/contact`. |
 | `prod/static/prod.css` | Estilos del aviso de cookies y de los formularios, y las correcciones de diseño y móvil. |
 | `prod/static/og-*.jpg` | Imágenes para compartir en redes (1200×630). |
-| `app/api/contact/route.js` | Envía los formularios por SendGrid: aviso al equipo y confirmación a la persona en su idioma. |
+| `app/api/contact/route.js` | Envía los formularios por Resend: aviso al equipo y confirmación a la persona en su idioma. |
 | `vercel.json` | Comando de compilación con la capa de producción, cabeceras de seguridad y redirecciones. |
 
 `vercel.json` es lo que garantiza que la capa se aplique en Vercel: aunque una sincronización sobrescriba
@@ -20,8 +20,8 @@ Todo lo necesario para producción vive fuera de esos archivos y se aplica al co
 
 | Variable | Obligatoria | Uso |
 | --- | --- | --- |
-| `SENDGRID_API_KEY` | sí | Clave de API de SendGrid con permiso «Mail Send». |
-| `CONTACT_FROM` | sí | Remitente verificado en SendGrid, p. ej. `Boss.Technology <web@boss.technology>`. |
+| `RESEND_API_KEY` | sí | Clave de API de Resend con permiso de envío para `boss.technology`. |
+| `CONTACT_FROM` | no | Remitente en el dominio verificado en Resend. Por defecto `Boss.Technology <web@boss.technology>`. |
 | `CONTACT_TO` | no | Bandeja del equipo (varias separadas por coma). Por defecto `admin@boss.technology`. |
 | `CONTACT_TO_CAREERS` | no | Bandeja para el formulario de reclutamiento. Por defecto, la de `CONTACT_TO`. |
 | `GA_MEASUREMENT_ID` | no | ID de medición de GA4 (`G-XXXXXXX`). Sin ella no hay analítica ni aviso de cookies. Se lee al compilar: tras cambiarla hay que volver a desplegar. |
