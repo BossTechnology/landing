@@ -217,3 +217,4 @@ header.fixed :is([class~="bg-ink/95"]) a[aria-current="page"]{box-shadow:none}
 /* Mobile menu, light bar: the generic "a:hover → light tint" rule also hit the accent "Contactar"
    button, leaving white text on light grey. Keep the button's own hover. */
 header.fixed[data-bar="light"] :is([class~="bg-ink-2/95"],[class~="bg-ink/95"]) a.bg-accent-base:hover{background-color:#3f3ad9;color:var(--on-accent,#fff)}
+.pc-source-detail[hidden]{display:none!important}

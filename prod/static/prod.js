@@ -84,8 +84,8 @@
 
   /* ===================== 2. Forms ===================== */
   var M = EN
-    ? { required: "Please fill in your name, a valid email and a message.", requiredCountry: "Please fill in your name, a valid email, your country and a message.", consent: "To send the form, please accept the Privacy Policy and the Terms of Service.", sending: "Sending…", ok: "Bzzz. Thanks! We received your message and will get back to you soon. We also sent you a confirmation email.", fail: "We couldn't send your message. Please try again or write to admin@boss.technology." }
-    : { required: "Completa tu nombre, un correo válido y un mensaje.", requiredCountry: "Completa tu nombre, un correo válido, tu país y un mensaje.", consent: "Para enviar el formulario, acepta la Política de privacidad y los Términos de servicio.", sending: "Enviando…", ok: "Bzzz. ¡Gracias! Recibimos tu mensaje y te responderemos pronto. Te enviamos un correo de confirmación.", fail: "No pudimos enviar tu mensaje. Inténtalo de nuevo o escríbenos a admin@boss.technology." };
+    ? { required: "Please fill in your name, a valid email and a message.", requiredCountry: "Please fill in your name, a valid email, your country and a message.", consent: "To send the form, please accept the Privacy Policy and the Terms of Service.", requiredContact: "Please fill in your name, a valid email, your country, how you heard about us and a message.", partner: "Please tell us which partner referred you.", sending: "Sending…", ok: "Bzzz. Thanks! We received your message and will get back to you soon. We also sent you a confirmation email.", fail: "We couldn't send your message. Please try again or write to admin@boss.technology." }
+    : { required: "Completa tu nombre, un correo válido y un mensaje.", requiredCountry: "Completa tu nombre, un correo válido, tu país y un mensaje.", consent: "Para enviar el formulario, acepta la Política de privacidad y los Términos de servicio.", requiredContact: "Completa tu nombre, un correo válido, tu país, cómo nos conociste y un mensaje.", partner: "Indícanos qué partner te recomendó.", sending: "Enviando…", ok: "Bzzz. ¡Gracias! Recibimos tu mensaje y te responderemos pronto. Te enviamos un correo de confirmación.", fail: "No pudimos enviar tu mensaje. Inténtalo de nuevo o escríbenos a admin@boss.technology." };
   var loadedAt = Date.now();
 
   function note(f, text, bad) {
@@ -133,7 +133,7 @@
       data[el.name] = el.type === "checkbox" ? el.checked : (el.value || "").trim();
     });
     var bad = false;
-    [["firstName", !data.firstName], ["email", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || "")], ["country", f.elements.country && !data.country], ["message", !data.message]].forEach(function (r) {
+    [["firstName", !data.firstName], ["email", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || "")], ["country", f.elements.country && !data.country], ["source", f.elements.source && !data.source], ["sourceDetail", data.source === "Partner" && !data.sourceDetail], ["message", !data.message]].forEach(function (r) {
       var el = f.elements[r[0]]; if (!el) return;
       el.setAttribute("aria-invalid", r[1] ? "true" : "false");
       if (r[1]) bad = true;
@@ -147,7 +147,8 @@
     }
     if (consent) consent.setAttribute("aria-invalid", "false");
     if (bad) {
-      note(f, f.elements.country ? M.requiredCountry : M.required, true);
+      var onlyPartner = data.source === "Partner" && !data.sourceDetail && data.firstName && data.message && data.country && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || "");
+      note(f, onlyPartner ? M.partner : f.elements.source ? M.requiredContact : f.elements.country ? M.requiredCountry : M.required, true);
       var first = f.querySelector('[aria-invalid="true"]'); if (first) first.focus();
       return;
     }
@@ -163,7 +164,7 @@
       .then(function () {
         f.reset();
         note(f, M.ok);
-        if (gaLoaded) gtag("event", "generate_lead", { form_name: data.form, language: data.lang });
+        if (gaLoaded) gtag("event", "generate_lead", { form_name: data.form, language: data.lang, lead_source: data.source || "" });
       })
       .catch(function () { note(f, M.fail, true); })
       .then(function () { if (btn) btn.disabled = false; });
@@ -216,6 +217,62 @@
     ref.parentNode.insertBefore(wrap, ref.nextSibling);
   }
 
+  /* "How did you hear about us?" in the meeting form, after Country. Partner referrals ask which partner
+     (required) so the team can attribute them; personal referrals and "Other" ask for an optional detail.
+     Values are always in Spanish for the team. */
+  var SOURCES = [
+    ["Partner", "Me lo recomendó un partner", "A partner referred me"],
+    ["Recomendación", "Me lo recomendó una persona", "Someone recommended you"],
+    ["LinkedIn", "LinkedIn", "LinkedIn"],
+    ["Redes sociales", "Otras redes sociales", "Other social media"],
+    ["Buscador", "Google u otro buscador", "Google or another search engine"],
+    ["Evento", "Evento o conferencia", "Event or conference"],
+    ["Otro", "Otro", "Other"]];
+  var SOURCE_DETAIL = {
+    "Partner": EN ? ["Which partner?", "Partner name"] : ["¿Qué partner?", "Nombre del partner"],
+    "Recomendación": EN ? ["Who recommended us?", "Name (optional)"] : ["¿Quién te recomendó?", "Nombre (opcional)"],
+    "Otro": EN ? ["Tell us more", "Where did you hear about us? (optional)"] : ["Cuéntanos", "¿Dónde nos viste? (opcional)"]};
+  function sourceField() {
+    if (!/\/contacto(\.html)?$/.test(location.pathname)) return;
+    var f = document.querySelector("main form");
+    var country = f && f.querySelector('[name="country"]');
+    var company = f && f.querySelector('[name="company"]');
+    if (!country || !company || f.querySelector('[name="source"]')) return;
+    var lab = company.parentNode.querySelector("label");
+    var mk = function (text) { var l = document.createElement("label"); l.className = lab ? lab.className : ""; l.textContent = text; return l; };
+    var wrap = document.createElement("div");
+    var select = document.createElement("select");
+    select.name = "source";
+    select.className = (company.className || "") + " ct-sel";
+    select.setAttribute("aria-invalid", "false");
+    var ph = new Option(EN ? "Select an option" : "Selecciona una opción", "", true, true);
+    ph.disabled = true;
+    select.add(ph);
+    SOURCES.forEach(function (o) { select.add(new Option(EN ? o[2] : o[1], o[0])); });
+    wrap.appendChild(mk(EN ? "How did you hear about us?" : "¿Cómo nos conociste?"));
+    wrap.appendChild(select);
+    var dWrap = document.createElement("div");
+    dWrap.className = "pc-source-detail";
+    dWrap.hidden = true;
+    var dLabel = mk("");
+    var input = document.createElement("input");
+    input.name = "sourceDetail"; input.type = "text"; input.maxLength = 200;
+    input.className = company.className || "";
+    input.setAttribute("aria-invalid", "false");
+    dWrap.appendChild(dLabel); dWrap.appendChild(input);
+    var update = function () {
+      var d = SOURCE_DETAIL[select.value];
+      dWrap.hidden = !d;
+      if (d) { dLabel.textContent = d[0]; input.placeholder = d[1]; }
+      else { input.value = ""; input.setAttribute("aria-invalid", "false"); }
+    };
+    select.addEventListener("change", update);
+    f.addEventListener("reset", function () { setTimeout(update, 0); });
+    var after = country.parentNode;
+    after.parentNode.insertBefore(wrap, after.nextSibling);
+    wrap.parentNode.insertBefore(dWrap, wrap.nextSibling);
+  }
+
   /* Consent checkbox (privacy policy + terms) before the submit button, unchecked by default. */
   function consentField(f) {
     if (f.querySelector('[name="consent"]')) return;
@@ -261,6 +318,7 @@
   function init() {
     markCurrent();
     countryField();
+    sourceField();
     Array.prototype.forEach.call(document.querySelectorAll("main form"), consentField);
     menuA11y();
     footerLink();
