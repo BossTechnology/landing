@@ -165,14 +165,37 @@ cpSync("prod/static", path.join(OUT, "prod"), { recursive: true });
 /* ---------- 6. asset overrides ---------- */
 // Files in prod/overrides/ replace the artifact's file at the same path in public/
 // (e.g. a new case photo that the artifact still has the old version of).
+// The artifact's next.config.mjs serves /assets/* as "immutable" for a year, so a replaced file keeps the
+// same URL and browsers would keep showing the old one: every reference gets "?v=<content hash>".
 if (existsSync("prod/overrides")) {
   cpSync("prod/overrides", OUT, { recursive: true });
+  const overrides = [];
   (function list(dir) {
     for (const f of readdirSync(dir)) {
       const p = path.join(dir, f);
-      if (statSync(p).isDirectory()) list(p); else log.push(`override: ${path.relative("prod/overrides", p)}`);
+      if (statSync(p).isDirectory()) list(p);
+      else overrides.push({ rel: path.relative("prod/overrides", p).split(path.sep).join("/"), v: createHash("sha256").update(readFileSync(p)).digest("hex").slice(0, 8) });
     }
   })("prod/overrides");
+  const reEsc = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const textFiles = [];
+  (function walk(dir) {
+    for (const f of readdirSync(dir)) {
+      const p = path.join(dir, f);
+      if (statSync(p).isDirectory()) walk(p); else if (/\.(html|css|js)$/.test(f)) textFiles.push(p);
+    }
+  })(OUT);
+  for (const o of overrides) {
+    // relative or absolute reference to the file, not already versioned
+    const ref = new RegExp(`((?:\\.\\.\\/)*\\/?${reEsc(o.rel)})(?![?\\w.-])`, "g");
+    let n = 0;
+    for (const t of textFiles) {
+      const src = readFileSync(t, "utf8");
+      const out = src.replace(ref, (m) => { n++; return `${m}?v=${o.v}`; });
+      if (out !== src) writeFileSync(t, out);
+    }
+    log.push(`override: ${o.rel} (v=${o.v}, ${n} references)`);
+  }
 }
 
 for (const l of log) console.log("prod:", l);
